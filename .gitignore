@@ -1,0 +1,15 @@
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 本地私有内容（含真实项目信息的填写稿，勿提交）
+*.local.md
+private/
+draft/
