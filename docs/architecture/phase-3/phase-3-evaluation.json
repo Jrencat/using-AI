@@ -1,0 +1,40 @@
+{
+  "evaluation_id": "EVAL-PH3-001",
+  "note": "Evaluation-shaped record of the Phase 3 verification work. Not a new Protocol Core Object; stored outside every sealed package.",
+  "phase": "3",
+  "subject": "Reproducibility of the verdict on sealed Phase 2 packages from (package + external Human digest + Verification Contract v1) by a Context-Isolated standalone Validator",
+  "claim": "A context-isolated Claude that received only verification-contract.md, the package format, two sealed package copies and the Human digest record, and never the old verifier, tests, Expected or Negative Corpus, produced a standalone validator whose verdicts equal the pre-registered, Contract-derived Expected on all 18 cases.",
+  "decision": "PASS",
+  "verdict": "PASS",
+  "decision_scope": "Within Verification Contract v1 and the 18 pre-registered cases only. Not a claim of Validator correctness in general, Protocol completeness, or Independent Verification.",
+  "evidence_refs": [
+    {"id": "EV-1", "what": "Human External Digest Record", "path": "docs/architecture/phase-3/external-digest-record.json", "sha256": "325cbbe89c38520520bad496a0ed642baa64d9b660f24383fe758c9aeacc14f3"},
+    {"id": "EV-2", "what": "Verification Contract v1 (normative)", "path": "docs/architecture/phase-3/verification-contract.md", "sha256": "e5139d68eb796f4829ce40d2da18140358735cc53723a35b4c9ccf15ee154aa4"},
+    {"id": "EV-3", "what": "Pre-registered negative corpus + expected lock (18 cases, 85 files)", "path": "docs/architecture/phase-3/negative-corpus-record.json", "sha256": "baa3e2291ec0d13676f7cec451c5ec4627c1f0d41e510eda50e4e73eb9d3c240", "expected_sha256": "f5bf2b10ad5dd02e4d969debb78bb4761f6d8f4e4176a78c3320556bd2ac6ef2"},
+    {"id": "EV-4", "what": "Captured, sealed validator-authoring session (RUN_ID PH3-AUTH-01, session 9de7fed0-154d-4741-8ac5-59858ccc14b3, COMPLETE_WITHIN_BOUNDARY, 5 tool_use / 5 tool_result)", "path": "harness/runs/RUN-PH3-AUTH-01/ (gitignored, local-only)"},
+    {"id": "EV-5", "what": "Validator under test (v1)", "path": "D:\\phase3-iso\\validator.py", "sha256": "5fa40eccb4ebbc52aacfcde575f067c7e52a855ada5587e2eabb42ac3ceec856"},
+    {"id": "EV-6", "what": "Differential results, first round", "path": "phase-3-validation/differential-results-v1.json", "sha256": "58b606bd0150012d76ffb7441a7e9cfb966116d753f62a2f0d80b60652b498d0"},
+    {"id": "EV-7", "what": "Differential results, byte-identical re-run", "path": "phase-3-validation/differential-results-v1-rerun.json", "sha256": "58b606bd0150012d76ffb7441a7e9cfb966116d753f62a2f0d80b60652b498d0"},
+    {"id": "EV-8", "what": "Differential matrix and divergence analysis", "path": "docs/architecture/phase-3/differential-verification.md"}
+  ],
+  "results": {
+    "cases": 18,
+    "new_validator_equals_expected": 18,
+    "old_verifier_equals_expected": 10,
+    "divergences": {"D1": ["P04", "N06a", "N06b", "N07"], "D2": ["N03", "N09"], "D3": ["N05b"], "D4": ["N10"]},
+    "new_validator_bugs": 0,
+    "test_corpus_errors": 0,
+    "execution_errors": 0
+  },
+  "collected_by": "Claude Sonnet 5.5",
+  "validator_authored_by": "Claude Sonnet 5.5 (context-isolated session)",
+  "trust_tier": "SAME_FAMILY_REVIEW",
+  "trust_tier_note": "Data, code and context axes met; model-family axis NOT met. Not INDEPENDENT_VERIFICATION.",
+  "source": {
+    "verification_contract": "docs/architecture/phase-3/verification-contract.md",
+    "differential_matrix": "docs/architecture/phase-3/differential-verification.md",
+    "external_digest": "docs/architecture/phase-3/external-digest-record.json",
+    "pre_registered_expected": "docs/architecture/phase-3/negative-corpus-record.json (locks D:\\phase3-pre-registered\\expected\\expected.json)",
+    "human_verification": "docs/architecture/phase-3/phase-3-closeout.md section 11 (Human-confirmed in this review)"
+  }
+}

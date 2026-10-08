@@ -1,0 +1,800 @@
+{
+ "validator_sha256": "5fa40eccb4ebbc52aacfcde575f067c7e52a855ada5587e2eabb42ac3ceec856",
+ "old_verifier_sha256": "8d134a1c3db1f9a6d07b247955fd1debd24d2dcfef837d18671e88bc7c6b4c42",
+ "expected_sha256": "f5bf2b10ad5dd02e4d969debb78bb4761f6d8f4e4176a78c3320556bd2ac6ef2",
+ "results": [
+  {
+   "case": "P01",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "PASS",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "anchor": "VERIFIED",
+     "findings": []
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "P02",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "issues": [],
+     "insufficient": [
+      "no Task with assumption_deps"
+     ],
+     "claim_mismatch": [],
+     "chain": null,
+     "event_count": 1
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "S4",
+       "outcome": "INSUFFICIENT",
+       "detail": "no gated Task exists"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "P03",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "PASS",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "anchor": "VERIFIED",
+     "findings": []
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "P04",
+   "digest_type": "NONE",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "ABSENT",
+     "findings": [
+      {
+       "rule": "I1",
+       "outcome": "INSUFFICIENT",
+       "detail": "digest record absent or unparseable"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N01",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "package hash mismatch",
+      "sealed runtime differs from source slice"
+     ],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "MISMATCH",
+     "findings": [
+      {
+       "rule": "I2",
+       "outcome": "FAIL",
+       "detail": "digest mismatch: runtime.jsonl"
+      },
+      {
+       "rule": "I3",
+       "outcome": "FAIL",
+       "detail": "manifest.runtime_sha256 != sha256(runtime.jsonl)"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N01b",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "package hash mismatch",
+      "sealed runtime differs from source slice"
+     ],
+     "insufficient": [
+      "no Task with assumption_deps"
+     ],
+     "claim_mismatch": [],
+     "chain": null,
+     "event_count": 1
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "MISMATCH",
+     "findings": [
+      {
+       "rule": "I2",
+       "outcome": "FAIL",
+       "detail": "digest mismatch: runtime.jsonl"
+      },
+      {
+       "rule": "I3",
+       "outcome": "FAIL",
+       "detail": "manifest.runtime_sha256 != sha256(runtime.jsonl)"
+      },
+      {
+       "rule": "S4",
+       "outcome": "INSUFFICIENT",
+       "detail": "no gated Task exists"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N02a",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "Task reached ELIGIBLE despite ISOLATED dependency",
+      "final Task state is ELIGIBLE, expected BLOCKED"
+     ],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "ELIGIBLE"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "S2",
+       "outcome": "FAIL",
+       "detail": "task 'T-VSC-01' became ELIGIBLE (priority P1, unpromoted deps ['AS-VSC-01'])"
+      },
+      {
+       "rule": "S5",
+       "outcome": "FAIL",
+       "detail": "task 'T-VSC-01' not BLOCKED after rejection (final 'ELIGIBLE')"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N02b",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "sequence broken"
+     ],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "E1",
+       "outcome": "FAIL",
+       "detail": "event 4 has sequence 9, expected 4"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N03",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "sealed runtime differs from source slice"
+     ],
+     "insufficient": [
+      "no Runtime receipt for QUESTION_CREATED seq 1"
+     ],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "R1",
+       "outcome": "INSUFFICIENT",
+       "detail": "no Runtime receipt for event '3b90e695-8687-4da0-a4a7-661a350593eb'"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N04",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "issues": [],
+     "insufficient": [
+      "no Runtime receipt for TASK_CREATED seq 4"
+     ],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "R1",
+       "outcome": "INSUFFICIENT",
+       "detail": "no Runtime receipt for event '00000000-0000-4000-8000-000000000004'"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N05a",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "package hash mismatch"
+     ],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "I3",
+       "outcome": "FAIL",
+       "detail": "manifest.events_sha256 != sha256(events.jsonl)"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N05b",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "I6",
+       "outcome": "FAIL",
+       "detail": "runtime_inventory.row_count=27, actual 26"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N06a",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "MISMATCH",
+     "findings": [
+      {
+       "rule": "I2",
+       "outcome": "FAIL",
+       "detail": "digest mismatch: events.jsonl, manifest.json"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N06b",
+   "digest_type": "NONE",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "ABSENT",
+     "findings": [
+      {
+       "rule": "I1",
+       "outcome": "INSUFFICIENT",
+       "detail": "digest record absent or unparseable"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N07",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "MISMATCH",
+     "findings": [
+      {
+       "rule": "I2",
+       "outcome": "FAIL",
+       "detail": "digest mismatch: events.jsonl"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N08",
+   "digest_type": "HUMAN_ANCHORED_DIGEST",
+   "expected": "INVALID_AGENT_RESULT",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "INVALID_AGENT_RESULT",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [
+      "T-VSC-01: claimed ELIGIBLE, recorded BLOCKED"
+     ],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INVALID_AGENT_RESULT",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "C1",
+       "outcome": "INVALID_AGENT_RESULT",
+       "detail": "claim 'T-VSC-01'='ELIGIBLE' but recorded state is 'BLOCKED'"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N09",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "INSUFFICIENT",
+   "old": {
+    "exit": 1,
+    "json": {
+     "verdict": "FAIL",
+     "issues": [
+      "sealed runtime differs from source slice"
+     ],
+     "insufficient": [
+      "no recorded ELIGIBLE rejection"
+     ],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "DRAFT"
+      }
+     },
+     "event_count": 4
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "INSUFFICIENT",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "S5",
+       "outcome": "INSUFFICIENT",
+       "detail": "no ELIGIBLE rejection for gated task 'T-VSC-01'"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  },
+  {
+   "case": "N10",
+   "digest_type": "TEST_FIXTURE_DIGEST",
+   "expected": "FAIL",
+   "old": {
+    "exit": 0,
+    "json": {
+     "verdict": "PASS",
+     "issues": [],
+     "insufficient": [],
+     "claim_mismatch": [],
+     "chain": {
+      "question": "Q-VSC-01",
+      "assumption": "AS-VSC-01",
+      "task": "T-VSC-01",
+      "states": {
+       "Q-VSC-01": "ASSUMED",
+       "AS-VSC-01": "ISOLATED",
+       "T-VSC-01": "BLOCKED"
+      }
+     },
+     "event_count": 6
+    },
+    "stdout": null,
+    "stderr": ""
+   },
+   "new": {
+    "exit": 0,
+    "json": {
+     "verdict": "FAIL",
+     "anchor": "VERIFIED",
+     "findings": [
+      {
+       "rule": "S3",
+       "outcome": "FAIL",
+       "detail": "Critical question 'Q-VSC-01' moved to ASSUMED"
+      }
+     ]
+    },
+    "stdout": null,
+    "stderr": ""
+   }
+  }
+ ]
+}
