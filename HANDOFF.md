@@ -32,7 +32,7 @@ Phase 1: PASS / CLOSED   (1A COMPLETE | 1B COMPLETE | 1C PASS WITH GAPS, Protoco
 Phase 2: PASS / CLOSED   (2.1 PASS | 2.2 PASS; do not re-run; do not create PH2 runs)
 Phase 3: PASS / CLOSED   (Trust Label: SAME_FAMILY_REVIEW)
 Phase 4: IN PROGRESS — C1 (Scope Boundary Conformance): Contract/Corpus v3 APPROVED; local tools + anchor_tool + Fixture implemented; one Live Run PH4-C1-LIVE-01 (FX-ELIGIBLE) = Checker PASS (same-author, local); Human spot check ACCEPTED WITH BOUNDED SCOPE; C1 Gate = PASS (bounded) per `docs/architecture/phase-4/phase-4-closeout.md`; independent Verification and other scenarios NOT done
-Phase 5: IN PROGRESS — P5-1 Codex receipt adapter ACCEPTED (offline scope); no real Codex run; P5-2/3/4 not authorized (see §I and docs/architecture/phase-5/p5-1-closeout.md)
+Phase 5: IN PROGRESS — P5-1 Codex receipt adapter ACCEPTED (offline scope); P5-1.1 mapping v2 ACCEPTED (offline scope, opt-in `--mapping-version 2`); no real Codex run; P5-2/3/4 not authorized (see §I, docs/architecture/phase-5/p5-1-closeout.md and p5-1-1-closeout.md)
 ```
 
 Docs: `phase-1d/phase-1d-closeout.md`; `phase-2/phase-2-closeout.md` (+ 2-boundary, 2-1, 2-2); `phase-3/phase-3-closeout.md` (+ boundary analysis, contract, differential).
@@ -182,7 +182,8 @@ The authorized scope is complete. Nothing further has been started.
 
 Update: Human spot check ACCEPTED WITH BOUNDED SCOPE; C1 Gate = PASS (bounded) in phase-4-closeout.md and scope-conformance-evaluation.json (checkpoint-committed).
 Phase 5: boundary analysis done (`docs/architecture/phase-5/phase-5-boundary-analysis.md`); P5-1 Codex receipt adapter ACCEPTED — OFFLINE SCOPE (`docs/architecture/phase-5/p5-1-closeout.md`; adapter in `phase-5-validation/codex_receipt/`, mapping v1 locked, 11 tests passed, not re-run for the archive). No real Codex run (no quota); P5-2/P5-3/P5-4 NOT authorized. Adapter output is classified TOOL_GENERATED, not RUNTIME_GENERATED (local P5-1 recommendation only).
-Next: decide whether a mapping v2 is worth doing (`token_usage_record` / `compacted` make 34 of 112 local sessions INCOMPLETE under v1), then decide when to authorize P5-2. Open items:
+Phase 5 P5-1.1: mapping v2 implemented and ACCEPTED — OFFLINE SCOPE (`docs/architecture/phase-5/p5-1-1-closeout.md`; design record `mapping-v2-proposal.md`, whose T2 text is superseded by T3). Selected only with `--mapping-version 2`; no flag = v1, v1 files and outputs unchanged. v2: `token_usage_record` ignored only under the finite allow-list T3 (observed structure, CLI about 0.161.0; not a cross-version schema), else `TOKEN_USAGE_UNEXPECTED_SHAPE`; `compacted` always `COMPACTION_PRESENT`; unanswered calls stay `UNPAIRED_CALL`; no `session_id` consistency check. Registry `CODEX-RECEIPT-PREREG-V2` (32 cases) and lock `CODEX-RECEIPT-LOCK-V2` were locked before the adapter change. 26 unittest tests (11 v1 + 15 v2) passed, 8 Harness black-box cases ok; offline only, no real Codex run, no Independent Verification. Finding: the Harness seals a gapped `runtime.partial.jsonl` as COMPLETE_WITHIN_BOUNDARY, so `runtime.jsonl` stays withheld on any gap. Adapter output stays TOOL_GENERATED, not RUNTIME_GENERATED.
+Next: Human rulings H1 (classification), H2 (authorize P5-2 and Codex quota), H3 (close Phase 4), H4 (P5-3 / P5-4). A real session containing `compacted` or an unanswered call would still be INCOMPLETE. P5-2 is NOT started. Open items:
 - Independent Verification, FX-BLOCKED, repeat runs — each needs separate explicit authorization
 - Contract ambiguity: whether the spot check is a "required item" (§14) is unresolved but no longer decides the C1 outcome; Contract not amended
 - Whether to formally close Phase 4: Human Gate decision (not made by the closeout)
@@ -192,7 +193,7 @@ How to work in a new chat:
 - read this file, then `docs/architecture/phase-4/scope-conformance-contract.md` and `phase-4-validation/README.md` + `fixture/README.md` only as needed
 - do not re-audit closed phases or the frozen Contract/Corpus; do not widen verification on your own
 - do not turn optional assurances (Human spot check, Independent Verification) into mandatory Gates; the Human decides
-- Phase 5: read `docs/architecture/phase-5/p5-1-closeout.md` first; the locked mapping v1 files are not edited; the single recommended next step is the mapping v2 decision, not a real Codex run
+- Phase 5: read `docs/architecture/phase-5/p5-1-closeout.md` and `p5-1-1-closeout.md` first; the locked mapping v1 and v2 files (and their locks) are not edited; a change needs a new version, lock, registry id and a Human decision; the next step is a Human ruling (H1–H4), not a real Codex run
 
 Until then:
 - no new Live Run, no independent Verification, no new tools
