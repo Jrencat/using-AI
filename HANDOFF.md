@@ -31,7 +31,7 @@ Phase 1: PASS / CLOSED   (1A COMPLETE | 1B COMPLETE | 1C PASS WITH GAPS, Protoco
                           do NOT reopen 1D; do NOT re-run A–O, P-D, P-D-04, or create P-D-05)
 Phase 2: PASS / CLOSED   (2.1 PASS | 2.2 PASS; do not re-run; do not create PH2 runs)
 Phase 3: PASS / CLOSED   (Trust Label: SAME_FAMILY_REVIEW)
-Phase 4: IN PROGRESS — C1 (Scope Boundary Conformance): Contract/Corpus v3 APPROVED; local tools + anchor_tool + Fixture implemented; one Live Run PH4-C1-LIVE-01 (FX-ELIGIBLE) = Checker PASS (same-author, local); Human spot check, independent Verification and other scenarios NOT done
+Phase 4: IN PROGRESS — C1 (Scope Boundary Conformance): Contract/Corpus v3 APPROVED; local tools + anchor_tool + Fixture implemented; one Live Run PH4-C1-LIVE-01 (FX-ELIGIBLE) = Checker PASS (same-author, local); Human spot check ACCEPTED WITH BOUNDED SCOPE; C1 Gate = PASS (bounded) per `docs/architecture/phase-4/phase-4-closeout.md`; independent Verification and other scenarios NOT done
 ```
 
 Docs: `phase-1d/phase-1d-closeout.md`; `phase-2/phase-2-closeout.md` (+ 2-boundary, 2-1, 2-2); `phase-3/phase-3-closeout.md` (+ boundary analysis, contract, differential).
@@ -48,7 +48,8 @@ Corpus v3 run:                           143/143 match Expected Verdict, 0 misma
 Fixture (phase-4-validation/fixture/):   CREATED, 5/5 local tests (workspace, fixture.json, README with Live Run operating notes)
 anchor_tool.py (+ test_anchor.py):       CREATED, 6/6 local tests (fake package; Contract §8 anchors A/Z)
 Live Run PH4-C1-LIVE-01 (FX-ELIGIBLE):   DONE — Checker PASS, findings [], exit 0; Harness verify valid_package=true, capture COMPLETE_WITHIN_BOUNDARY
-Human spot check (diff vs transcript):   NOT DONE
+Human spot check (diff vs transcript):   ACCEPTED WITH BOUNDED SCOPE (Human ruling; Edit tool-result and byte-level diff not checked; see phase-4-closeout.md §3)
+C1 Gate:                                 PASS, bounded (phase-4-closeout.md + scope-conformance-evaluation.json, EVAL-PH4-C1-001); not Independent Verification
 Independent Verification, FX-BLOCKED, repeat runs, other Agent behaviour: NOT DONE, NOT AUTHORIZED
 Protocol, Verification Contract v1, Phase 1–3: UNCHANGED
 ```
@@ -66,7 +67,7 @@ Protocol, Verification Contract v1, Phase 1–3: UNCHANGED
 
 - The Human approved closing the current C1 Live Run work item (`PH4-C1-LIVE-01`, FX-ELIGIBLE). Basis: Checker `PASS` with empty findings; Harness package verified; same-author local run, not Independent Verification; Contract §14 does not explicitly make the Human spot check a Gate-closing precondition (wording ambiguous); no wider verification required now.
 - Scope of the decision: this work item ONLY. It does not mean all C1 scenarios are verified and does not by itself mean Phase 4 is complete; Phase 4 completion is judged against the established project scope, not inferred from one Live Run.
-- `HUMAN_VERIFICATION`: NOT completed. `INDEPENDENT_VERIFICATION`: NOT completed.
+- `HUMAN_VERIFICATION`: completed within bounded scope later (Human spot check accepted; see phase-4-closeout.md §3). `INDEPENDENT_VERIFICATION`: NOT completed.
 - The §14 wording ambiguity stays open; the Contract is not amended.
 - Deferred, not executed: `FX-BLOCKED`, repeat runs, other Agent tests.
 
@@ -178,17 +179,18 @@ Phase 4 C1: Contract and Corpus v3 approved (Gate ③); tools 143/143; Fixture +
 Live Run PH4-C1-LIVE-01 (FX-ELIGIBLE) = Checker PASS (same-author, local, not Independent Verification).
 The authorized scope is complete. Nothing further has been started.
 
-Next: WAIT for the Human's decision. Open items (none is made a blocker by §14):
-- Human spot check (diff vs transcript) — outstanding additional assurance; needed to claim HUMAN_VERIFICATION
-- Independent Verification, FX-BLOCKED, repeat runs, commit/checkpoint — each needs separate explicit authorization
-- Contract ambiguity: whether the spot check is a "required item" (§14) is undecided; Human decides
+Update: Human spot check ACCEPTED WITH BOUNDED SCOPE; C1 Gate = PASS (bounded) in phase-4-closeout.md and scope-conformance-evaluation.json (checkpoint-committed).
+Next: a Phase 5 boundary analysis if the Human wants to continue (not started). Open items:
+- Independent Verification, FX-BLOCKED, repeat runs — each needs separate explicit authorization
+- Contract ambiguity: whether the spot check is a "required item" (§14) is unresolved but no longer decides the C1 outcome; Contract not amended
+- Whether to formally close Phase 4: Human Gate decision (not made by the closeout)
 - C1 Live Run work item: CLOSED by Human decision (see "Human Gate decision"). Whole-Phase-4 completion is NOT inferred from it; it follows the established project scope
 
 How to work in a new chat:
 - read this file, then `docs/architecture/phase-4/scope-conformance-contract.md` and `phase-4-validation/README.md` + `fixture/README.md` only as needed
 - do not re-audit closed phases or the frozen Contract/Corpus; do not widen verification on your own
 - do not turn optional assurances (Human spot check, Independent Verification) into mandatory Gates; the Human decides
-- the single recommended next step is to wait for the Human's decision on the open items above (e.g. optional Human spot check, or authorizing FX-BLOCKED / Independent Verification)
+- the single recommended next step is a Phase 5 boundary analysis (not started), if the Human wants to continue
 
 Until then:
 - no new Live Run, no independent Verification, no new tools
