@@ -1,0 +1,68 @@
+{
+  "canonicalization": {
+    "canonical_form": "UTF-8 bytes of json.dumps(parsed_corpus, sort_keys=True, separators=(',',':'), ensure_ascii=True), no trailing newline",
+    "corpus_canonical_sha256_is": "SHA-256 of canonical_form; independent of file formatting",
+    "excluded": "timestamps, UUIDs, absolute paths, user names, checker output",
+    "file_form": "json.dumps(parsed_corpus, sort_keys=True, indent=2, ensure_ascii=True) + LF; corpus_file_sha256 is the SHA-256 of these exact LF bytes"
+  },
+  "carried_over_from_v2": 143,
+  "case_count": 143,
+  "contract_file": "docs/architecture/phase-4/scope-conformance-contract.md",
+  "contract_sha256": "8803cf3283ee679cf3b7024287c7ca8fef5b40ac4b5d06e619529c6bce567cea",
+  "contract_sha256_note": "SHA-256 of the contract file bytes (LF) in the working tree at lock time: Appendix A priority sentence deleted; SC-M1 entry-shape wording and SC-E5 entry-member / exception wording clarified",
+  "corpus_canonical_sha256": "899218bbe990c5e97a6b700268e7ed1ba8f8b527df9daf2a439159cfabfbdd95",
+  "corpus_file": "docs/architecture/phase-4/c1-negative-corpus-v3.json",
+  "corpus_file_sha256": "06d0ba816c792443b10adcfd68ade6d0bb2fb77656459b16b2facaf8de37ee7e",
+  "corpus_id": "C1-NEG-CORPUS-V3",
+  "corpus_version": 3,
+  "counts_by_category": {
+    "A": 12,
+    "B": 4,
+    "C": 6,
+    "D": 26,
+    "E": 32,
+    "F": 23,
+    "G": 8,
+    "H": 2,
+    "I": 10,
+    "U": 12,
+    "X": 8
+  },
+  "counts_by_expected_verdict": {
+    "BLOCKED": 33,
+    "FAIL": 64,
+    "INSUFFICIENT": 26,
+    "INVALID_AGENT_RESULT": 4,
+    "PASS": 16
+  },
+  "derivation_order": "Contract (clarified) -> Corpus v3 cases -> Expected verdicts -> Hash lock -> (later) Checker implementation",
+  "lock_statement": "The expected verdicts in corpus_file are pre-registered and fixed by corpus_canonical_sha256. They may not be changed to match any checker result. A change requires a new corpus_id/version, a new record and a Human decision. The v1 and v2 corpora and records are retained unmodified.",
+  "new_cases": 0,
+  "record_kind": "C1_NEGATIVE_CORPUS_PREREGISTRATION",
+  "record_version": 1,
+  "removed_case_ids": [
+    "U06-D"
+  ],
+  "supersedes": {
+    "contract_sha256": "853cc58d150999c8b43f0b06c8d2a7a4bdbad9d616e2b39c1a34c3c12abc08af",
+    "corpus_canonical_sha256": "b935461a919b576db0a7f604560898541025f71da93f1a5fd800dfeec25f9cb3",
+    "corpus_file_sha256": "47bc911b88790f1b7afe4693f9e66c31d14786536b1e1f2a4480d16a76bacb08",
+    "corpus_id": "C1-NEG-CORPUS-V2",
+    "lineage": [
+      {
+        "contract_sha256": "975dfc44c8ddfcd3e9ac6b86f7d1f7cfcd8b73e6f26b1dd582e2afea78da443e",
+        "corpus_canonical_sha256": "5b5c5d8a65b809922cc2f7cac59fef9f9d3481daa8638473c3efee428c410a0b",
+        "corpus_file_sha256": "8de3d0c07e55528c410678640da08b3aece9c3bf1c8ea405f7e7082982708566",
+        "corpus_id": "C1-NEG-CORPUS-V1",
+        "record_file": "docs/architecture/phase-4/c1-negative-corpus-record.json"
+      }
+    ],
+    "record_file": "docs/architecture/phase-4/c1-negative-corpus-v2-record.json"
+  },
+  "unresolved_not_registered_ids": [],
+  "verification_instructions": [
+    "certutil -hashfile docs/architecture/phase-4/c1-negative-corpus-v3.json SHA256   must equal corpus_file_sha256 (LF bytes; a CRLF checkout changes this value, not corpus_canonical_sha256)",
+    "Recompute corpus_canonical_sha256 with any JSON tool following canonical_form",
+    "certutil -hashfile docs/architecture/phase-4/scope-conformance-contract.md SHA256   must equal contract_sha256"
+  ]
+}

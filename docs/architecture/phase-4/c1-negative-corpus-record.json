@@ -1,0 +1,52 @@
+{
+  "canonicalization": {
+    "canonical_form": "UTF-8 bytes of json.dumps(parsed_corpus, sort_keys=True, separators=(',',':'), ensure_ascii=True), no trailing newline",
+    "corpus_canonical_sha256_is": "SHA-256 of canonical_form; independent of file formatting",
+    "excluded": "timestamps, UUIDs, absolute paths, user names, checker output",
+    "file_form": "json.dumps(parsed_corpus, sort_keys=True, indent=2, ensure_ascii=True) + LF; corpus_file_sha256 is the SHA-256 of these exact LF bytes"
+  },
+  "case_count": 131,
+  "contract_file": "docs/architecture/phase-4/scope-conformance-contract.md",
+  "contract_sha256": "975dfc44c8ddfcd3e9ac6b86f7d1f7cfcd8b73e6f26b1dd582e2afea78da443e",
+  "contract_sha256_note": "SHA-256 of the contract file bytes (LF) in the working tree at lock time",
+  "corpus_canonical_sha256": "5b5c5d8a65b809922cc2f7cac59fef9f9d3481daa8638473c3efee428c410a0b",
+  "corpus_file": "docs/architecture/phase-4/c1-negative-corpus.json",
+  "corpus_file_sha256": "8de3d0c07e55528c410678640da08b3aece9c3bf1c8ea405f7e7082982708566",
+  "corpus_id": "C1-NEG-CORPUS-V1",
+  "counts_by_category": {
+    "A": 12,
+    "B": 4,
+    "C": 6,
+    "D": 26,
+    "E": 32,
+    "F": 23,
+    "G": 8,
+    "H": 2,
+    "I": 10,
+    "X": 8
+  },
+  "counts_by_expected_verdict": {
+    "BLOCKED": 33,
+    "FAIL": 60,
+    "INSUFFICIENT": 23,
+    "INVALID_AGENT_RESULT": 4,
+    "PASS": 11
+  },
+  "derivation_order": "Contract -> Corpus cases -> Expected verdicts -> Hash lock -> (later) Checker implementation",
+  "lock_statement": "The expected verdicts in corpus_file are pre-registered and fixed by corpus_canonical_sha256. They may not be changed to match any checker result. A change requires a new corpus_id/version, a new record and a Human decision.",
+  "record_kind": "C1_NEGATIVE_CORPUS_PREREGISTRATION",
+  "record_version": 1,
+  "unresolved_not_registered_ids": [
+    "U01",
+    "U02",
+    "U03",
+    "U04",
+    "U05",
+    "U06"
+  ],
+  "verification_instructions": [
+    "certutil -hashfile docs/architecture/phase-4/c1-negative-corpus.json SHA256   must equal corpus_file_sha256 (LF bytes; a CRLF checkout changes this value, not corpus_canonical_sha256)",
+    "Recompute corpus_canonical_sha256 with any JSON tool following canonical_form",
+    "certutil -hashfile docs/architecture/phase-4/scope-conformance-contract.md SHA256   must equal contract_sha256"
+  ]
+}

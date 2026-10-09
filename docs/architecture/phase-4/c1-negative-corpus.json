@@ -1,0 +1,2085 @@
+{
+  "cases": [
+    {
+      "case_id": "N01",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.modify:src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "V = delta minus Allowed is non-empty: src/b.py is outside Scope(T).",
+      "scenario": "ELIGIBLE scope {src/a.py}; delta = {src/b.py}"
+    },
+    {
+      "case_id": "N02",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py",
+          "post.modify:src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "One in-scope change does not excuse an out-of-scope change.",
+      "scenario": "ELIGIBLE scope {src/a.py}; delta = {src/a.py, src/b.py}"
+    },
+    {
+      "case_id": "N03",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "No ELIGIBLE Task so Allowed is empty; any mutation is a violation.",
+      "scenario": "BLOCKED-only; delta = {src/a.py}"
+    },
+    {
+      "case_id": "N04",
+      "category": "A",
+      "construction": {
+        "ops": [],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Allowed is empty and delta is empty; BLOCKED-only must not be judged FAIL by default.",
+      "scenario": "BLOCKED-only; delta = empty (positive boundary case)"
+    },
+    {
+      "case_id": "N10",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.add:src/new.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "ADDED path outside Scope.",
+      "scenario": "ELIGIBLE scope {src/a.py}; out-of-scope ADD of src/new.py"
+    },
+    {
+      "case_id": "N11",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.delete:README.txt"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "DELETED path outside Scope.",
+      "scenario": "ELIGIBLE scope {src/a.py}; out-of-scope DELETE of README.txt"
+    },
+    {
+      "case_id": "N12",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.modify:src/b.py"
+        ],
+        "profile": "MIXED"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "BLOCKED Task's file is outside Allowed (Scope of the single ELIGIBLE Task only).",
+      "scenario": "ELIGIBLE {src/a.py} plus BLOCKED {src/b.py} recorded; delta = {src/b.py}"
+    },
+    {
+      "case_id": "N13",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py",
+          "post.modify:src/b.py"
+        ],
+        "profile": "MIXED"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "The in-scope part does not authorize the BLOCKED-scope part; no union.",
+      "scenario": "ELIGIBLE {src/a.py} plus BLOCKED {src/b.py}; delta = {src/a.py, src/b.py}"
+    },
+    {
+      "case_id": "N14",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.add:src/new.py"
+        ],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "Any ADDED path violates an empty Allowed.",
+      "scenario": "BLOCKED-only; ADD src/new.py"
+    },
+    {
+      "case_id": "N15",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.delete:README.txt"
+        ],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "Any DELETED path violates an empty Allowed.",
+      "scenario": "BLOCKED-only; DELETE README.txt"
+    },
+    {
+      "case_id": "N16",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.case_rename:src/a.py|src/A.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "Shows as DELETED src/a.py plus ADDED src/A.py; src/A.py is outside Scope (case-sensitive, section 5).",
+      "scenario": "ELIGIBLE {src/a.py}; case-only rename src/a.py -> src/A.py"
+    },
+    {
+      "case_id": "N17",
+      "category": "A",
+      "construction": {
+        "ops": [
+          "post.add:src/\u00e9.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "Manifest paths are compared as exact strings; an unexpected name is an ordinary ADDED path outside Scope.",
+      "scenario": "ELIGIBLE {src/a.py}; ADD non-ASCII file src/\u00e9.py"
+    },
+    {
+      "case_id": "N05",
+      "category": "B",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-ELIG2|P1|ELIGIBLE|src/b.py"
+        ]
+      },
+      "contract_rule": "SC-P4",
+      "expected_verdict": "BLOCKED",
+      "rationale": "C1 v1 proof-object limitation (no multi-Task mutation attribution). Not a Protocol Task-model invalidity.",
+      "scenario": "Two declared ELIGIBLE Tasks with different, disjoint scopes; delta = empty"
+    },
+    {
+      "case_id": "N18",
+      "category": "B",
+      "construction": {
+        "ops": [],
+        "profile": "MIXED",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-BLOCK|P2|BLOCKED|src/a.py,src/b.py"
+        ]
+      },
+      "contract_rule": "SC-P3",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Overlapping Task scopes make ownership ambiguous.",
+      "scenario": "ELIGIBLE {src/a.py} and BLOCKED {src/a.py, src/b.py}: scopes overlap; delta = empty"
+    },
+    {
+      "case_id": "N19",
+      "category": "B",
+      "construction": {
+        "ops": [
+          "post.modify:src/c.py"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-ELIG2|P1|ELIGIBLE|src/b.py"
+        ]
+      },
+      "contract_rule": "SC-P4",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Precondition fails, so Allowed is undefined and SC-A2 is skipped (section 10); no attribution guess.",
+      "scenario": "Two ELIGIBLE Tasks; delta = {src/c.py} outside both scopes"
+    },
+    {
+      "case_id": "N20",
+      "category": "B",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-ELIG2|P1|ELIGIBLE|src/b.py"
+        ]
+      },
+      "contract_rule": "SC-P4",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Checker must not select a Task or union scopes to make this PASS.",
+      "scenario": "Two ELIGIBLE Tasks; delta = {src/a.py} inside one scope"
+    },
+    {
+      "case_id": "N06",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "baseline.symlink:src/a.py",
+          "post.set_file:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-P7",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Baseline containing a symlink is invalid input. POST holds no symlink so SC-M2 does not apply.",
+      "scenario": "Baseline src/a.py is a symlink; post src/a.py is a regular file (no symlink in post)"
+    },
+    {
+      "case_id": "N07",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "baseline.remove_path:src/a.py",
+          "post.symlink:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M2",
+      "expected_verdict": "FAIL",
+      "rationale": "Any POST symlink fails regardless of Scope membership (would otherwise be an in-scope ADDED).",
+      "scenario": "Baseline lacks src/a.py; POST src/a.py is a symlink; scope {src/a.py}"
+    },
+    {
+      "case_id": "N08",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "post.symlink:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M2",
+      "expected_verdict": "FAIL",
+      "rationale": "File-to-symlink swap on an in-scope path must not pass as an in-scope MODIFIED.",
+      "scenario": "Baseline src/a.py is a file; POST src/a.py is a symlink; scope {src/a.py}"
+    },
+    {
+      "case_id": "N09",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "post.symlink:src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M2",
+      "expected_verdict": "FAIL",
+      "rationale": "SC-M2 applies to any POST symlink (SC-A2 also fires; this case alone does not isolate the two, N07 and N08 do).",
+      "scenario": "POST symlink at out-of-scope src/b.py; scope {src/a.py}"
+    },
+    {
+      "case_id": "N21",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "baseline.symlink:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M2,SC-P7",
+      "expected_verdict": "FAIL",
+      "rationale": "Both SC-P7 (BLOCKED) and SC-M2 (FAIL) apply; precedence FAIL over BLOCKED.",
+      "scenario": "Baseline src/a.py is a symlink and it persists unchanged in POST"
+    },
+    {
+      "case_id": "N22",
+      "category": "C",
+      "construction": {
+        "ops": [
+          "baseline.symlink:src/link.py",
+          "post.delete:src/link.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-P7",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P7 applies to any baseline symlink, not only scoped paths; POST has none.",
+      "scenario": "Baseline has an unrelated symlink src/link.py (not in any scope); POST removes it; no other change"
+    },
+    {
+      "case_id": "N23",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|/src/a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 4: no leading /.",
+      "scenario": "Scope path /src/a.py (absolute)"
+    },
+    {
+      "case_id": "N24",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|C:/src/a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar items 2 and 4: drive path / colon.",
+      "scenario": "Scope path C:/src/a.py (drive)"
+    },
+    {
+      "case_id": "N25",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|//srv/share/a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 4: UNC and empty segment.",
+      "scenario": "Scope path //srv/share/a.py (UNC)"
+    },
+    {
+      "case_id": "N26",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src\\a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 5: backslash rejected, never converted.",
+      "scenario": "Scope path src\\a.py (backslash)"
+    },
+    {
+      "case_id": "N27",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/./a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 3: no . segment.",
+      "scenario": "Scope path src/./a.py"
+    },
+    {
+      "case_id": "N28",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|../outside.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 3: no .. segment; escaping scope is BLOCKED.",
+      "scenario": "Scope path ../outside.py (escaping)"
+    },
+    {
+      "case_id": "N29",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/../src/a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 3: .. rejected even when it resolves inside; no normalisation.",
+      "scenario": "Scope path src/../src/a.py"
+    },
+    {
+      "case_id": "N30",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src//a.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 3: no empty segment.",
+      "scenario": "Scope path src//a.py (empty segment)"
+    },
+    {
+      "case_id": "N31",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar items 3 and 7: no trailing /, files only.",
+      "scenario": "Scope path src/ (trailing slash, directory)"
+    },
+    {
+      "case_id": "N32",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/NUL.txt"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 6, case-insensitive, with extension.",
+      "scenario": "Scope path src/NUL.txt (reserved device name with extension)"
+    },
+    {
+      "case_id": "N33",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/com1"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 6.",
+      "scenario": "Scope path src/com1 (reserved device name, lowercase, no extension)"
+    },
+    {
+      "case_id": "N34",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py,src/A.py"
+        ]
+      },
+      "contract_rule": "SC-P2",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Distinct paths equal under casefold inside one Scope set are ambiguous.",
+      "scenario": "One scope set holds src/a.py and src/A.py (casefold collision)"
+    },
+    {
+      "case_id": "N35",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "MIXED",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-BLOCK|P2|BLOCKED|src/A.py"
+        ]
+      },
+      "contract_rule": "SC-P2",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Ambiguity across the Scope sets of declared Tasks.",
+      "scenario": "ELIGIBLE {src/a.py} and BLOCKED {src/A.py} (casefold collision across Tasks)"
+    },
+    {
+      "case_id": "N36",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a b.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 2: ASCII [A-Za-z0-9_.-] only.",
+      "scenario": "Scope path 'src/a b.py' (space)"
+    },
+    {
+      "case_id": "N37",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/PROGRA~1.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 2: no ~.",
+      "scenario": "Scope path src/PROGRA~1.py (tilde)"
+    },
+    {
+      "case_id": "N38",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/\u00e9.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 2: ASCII only.",
+      "scenario": "Scope path src/\u00e9.py (non-ASCII)"
+    },
+    {
+      "case_id": "N39",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/*.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar items 2 and 7: no glob.",
+      "scenario": "Scope path src/*.py (glob)"
+    },
+    {
+      "case_id": "N40",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a."
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar item 3: no segment ending with a dot.",
+      "scenario": "Scope path src/a. (segment ends with a dot)"
+    },
+    {
+      "case_id": "N41",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|"
+        ]
+      },
+      "contract_rule": "SC-P6",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P6 requires a non-empty scope.",
+      "scenario": "ELIGIBLE Task with an empty scope list"
+    },
+    {
+      "case_id": "N42",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py/x.py"
+        ]
+      },
+      "contract_rule": "SC-P8",
+      "expected_verdict": "BLOCKED",
+      "rationale": "A baseline file is a proper ancestor of the scope path.",
+      "scenario": "Scope path src/a.py/x.py while baseline src/a.py is a file"
+    },
+    {
+      "case_id": "N43",
+      "category": "D",
+      "construction": {
+        "ops": [
+          "anchor.pre.observed_root:DIFFERENT"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-P5",
+      "expected_verdict": "BLOCKED",
+      "rationale": "v1 requires observed root equal to workspace root.",
+      "scenario": "Pre-anchor observed_root differs from workspace_root"
+    },
+    {
+      "case_id": "N44",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P2|ELIGIBLE|src/a.py"
+        ]
+      },
+      "contract_rule": "SC-P6",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P6: an ELIGIBLE Task has priority P0 or P1.",
+      "scenario": "Declared ELIGIBLE Task has priority P2"
+    },
+    {
+      "case_id": "N45",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "MIXED",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-ELIG|P2|BLOCKED|src/b.py"
+        ]
+      },
+      "contract_rule": "SC-P6",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P6: task_id values are unique.",
+      "scenario": "Two declared Tasks share task_id T-ELIG"
+    },
+    {
+      "case_id": "N46",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|DONE|src/a.py"
+        ]
+      },
+      "contract_rule": "SC-P6",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P6: expected_final_state in {ELIGIBLE, BLOCKED}.",
+      "scenario": "expected_final_state is DONE"
+    },
+    {
+      "case_id": "N47",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "MIXED",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py",
+          "T-BLOCK|P2|BLOCKED|../b.py"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "SC-P1 covers every declared Task's scope, not only the ELIGIBLE one.",
+      "scenario": "BLOCKED Task scope ../b.py (invalid on a non-authorizing Task)"
+    },
+    {
+      "case_id": "N48",
+      "category": "D",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py:stream"
+        ]
+      },
+      "contract_rule": "SC-P1",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Grammar items 2 and 4: colon not allowed.",
+      "scenario": "Scope path src/a.py:stream (colon, alternate data stream)"
+    },
+    {
+      "case_id": "N49",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "stale.baseline_bytes"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D1",
+      "expected_verdict": "FAIL",
+      "rationale": "Anchor exists, digest mismatch is FAIL (not INSUFFICIENT).",
+      "scenario": "Baseline manifest bytes differ from the digest in the pre-anchor"
+    },
+    {
+      "case_id": "N50",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.pre.baseline_manifest_name:other-baseline.json"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D1",
+      "expected_verdict": "FAIL",
+      "rationale": "SC-D1 also requires the file name to equal the anchored name.",
+      "scenario": "Supplied baseline file name differs from A.baseline_manifest"
+    },
+    {
+      "case_id": "N51",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.post.post_manifest_sha:WRONG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D2",
+      "expected_verdict": "FAIL",
+      "rationale": "Digest mismatch against an existing anchor.",
+      "scenario": "Post-anchor post_manifest_sha256 does not match the supplied post manifest"
+    },
+    {
+      "case_id": "N52",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "stale.post_bytes"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D2",
+      "expected_verdict": "FAIL",
+      "rationale": "Same as N51 from the tamper direction.",
+      "scenario": "Post manifest bytes altered after the post-anchor was recorded"
+    },
+    {
+      "case_id": "N53",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "post.modify:src/c.py",
+          "post.forge_hide:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D2",
+      "expected_verdict": "FAIL",
+      "rationale": "Only the external Human digest rejects it; without SC-D2 the delta would be empty and PASS.",
+      "scenario": "Self-consistent forgery: real post has out-of-scope change to src/c.py; supplied post manifest rewritten to hide it, bound_to kept consistent; post-anchor covers the honest post"
+    },
+    {
+      "case_id": "N54",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.post.package_sha:events.jsonl"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D3",
+      "expected_verdict": "FAIL",
+      "rationale": "Package file digest mismatch.",
+      "scenario": "Post-anchor digest for events.jsonl is wrong"
+    },
+    {
+      "case_id": "N55",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "stale.package_file:runtime.jsonl"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D3",
+      "expected_verdict": "FAIL",
+      "rationale": "Package file digest mismatch (SC-B3 also fires).",
+      "scenario": "runtime.jsonl altered after anchoring"
+    },
+    {
+      "case_id": "N56",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "stale.package_file:run.json"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D3",
+      "expected_verdict": "FAIL",
+      "rationale": "Package file digest mismatch.",
+      "scenario": "run.json altered after anchoring"
+    },
+    {
+      "case_id": "N57",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "stale.package_file:manifest.json"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-D3",
+      "expected_verdict": "FAIL",
+      "rationale": "Package file digest mismatch (SC-B3 also fires).",
+      "scenario": "manifest.json altered after anchoring"
+    },
+    {
+      "case_id": "N58",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.pre.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality across artefacts (section 9).",
+      "scenario": "Pre-anchor run_id differs from run.json run_id"
+    },
+    {
+      "case_id": "N59",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "post.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality.",
+      "scenario": "Post manifest run_id differs"
+    },
+    {
+      "case_id": "N60",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.post.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality.",
+      "scenario": "Post-anchor run_id differs"
+    },
+    {
+      "case_id": "N61",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "baseline.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality.",
+      "scenario": "Baseline manifest run_id differs"
+    },
+    {
+      "case_id": "N62",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "events.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality includes events[*].run_id.",
+      "scenario": "One events row carries a different run_id"
+    },
+    {
+      "case_id": "N63",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest_json.run_id:RUN-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B1",
+      "expected_verdict": "FAIL",
+      "rationale": "run_id equality.",
+      "scenario": "manifest.json run_id differs from run.json"
+    },
+    {
+      "case_id": "N64",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest_json.session_id:SESSION-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B2",
+      "expected_verdict": "FAIL",
+      "rationale": "session_id equality.",
+      "scenario": "manifest.json session_id differs from run.json"
+    },
+    {
+      "case_id": "N65",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "anchor.post.session_id:SESSION-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B2",
+      "expected_verdict": "FAIL",
+      "rationale": "session_id equality.",
+      "scenario": "Post-anchor session_id differs"
+    },
+    {
+      "case_id": "N66",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "post.bound_to.session_id:SESSION-OTHER"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B2",
+      "expected_verdict": "FAIL",
+      "rationale": "session_id equality.",
+      "scenario": "post bound_to.session_id differs"
+    },
+    {
+      "case_id": "N67",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "post.bound_to.manifest_sha:WRONG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B3",
+      "expected_verdict": "FAIL",
+      "rationale": "Post manifest not bound to this sealed package.",
+      "scenario": "post bound_to.manifest_sha256 does not match manifest.json"
+    },
+    {
+      "case_id": "N68",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "post.bound_to.events_sha:WRONG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B3",
+      "expected_verdict": "FAIL",
+      "rationale": "Post manifest not bound to these events.",
+      "scenario": "post bound_to.events_sha256 does not match events.jsonl"
+    },
+    {
+      "case_id": "N69",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest_json.runtime_sha:WRONG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B3",
+      "expected_verdict": "FAIL",
+      "rationale": "Internal manifest/runtime consistency.",
+      "scenario": "manifest.json runtime_sha256 does not match runtime.jsonl"
+    },
+    {
+      "case_id": "N70",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest_json.events_sha:WRONG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B3",
+      "expected_verdict": "FAIL",
+      "rationale": "Internal manifest/events consistency.",
+      "scenario": "manifest.json events_sha256 does not match events.jsonl"
+    },
+    {
+      "case_id": "N71",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "events.sequence_gap"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B4",
+      "expected_verdict": "FAIL",
+      "rationale": "sequence must be exactly 1..n.",
+      "scenario": "events sequence has a gap"
+    },
+    {
+      "case_id": "N72",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "events.source:agent"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B4",
+      "expected_verdict": "FAIL",
+      "rationale": "SC-B4 requires source = harness_cli.",
+      "scenario": "One event has source other than harness_cli"
+    },
+    {
+      "case_id": "N73",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "events.duplicate_event_id"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-B4",
+      "expected_verdict": "FAIL",
+      "rationale": "event_id must be unique.",
+      "scenario": "Duplicate event_id"
+    },
+    {
+      "case_id": "N74",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.post.unsorted"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "Manifest malformed.",
+      "scenario": "Post manifest entries not sorted"
+    },
+    {
+      "case_id": "N75",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.baseline.duplicate_path:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "Entries must be unique.",
+      "scenario": "Baseline manifest lists a path twice"
+    },
+    {
+      "case_id": "N76",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.post.casefold_pair:src/x.py|src/X.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "No casefold collision inside a manifest.",
+      "scenario": "Post manifest has src/x.py and src/X.py (casefold collision)"
+    },
+    {
+      "case_id": "N77",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.post.bad_type:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "type must be file or symlink.",
+      "scenario": "Post entry with type dir"
+    },
+    {
+      "case_id": "N78",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.post.bad_sha:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "sha256 must be 64 hex.",
+      "scenario": "Post entry sha256 is not 64 hex"
+    },
+    {
+      "case_id": "N79",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.post.kind:BASELINE"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "Wrong kind.",
+      "scenario": "Post manifest has kind BASELINE"
+    },
+    {
+      "case_id": "N80",
+      "category": "E",
+      "construction": {
+        "ops": [
+          "manifest.baseline.add_bound_to"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M1",
+      "expected_verdict": "FAIL",
+      "rationale": "bound_to only in POST.",
+      "scenario": "Baseline manifest carries bound_to"
+    },
+    {
+      "case_id": "N81",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "baseline.drop"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Absent required evidence is INSUFFICIENT.",
+      "scenario": "Baseline manifest file missing"
+    },
+    {
+      "case_id": "N82",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "post.drop"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Absent required evidence.",
+      "scenario": "Post manifest file missing"
+    },
+    {
+      "case_id": "N83",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "package.drop_dir"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "All four package files absent.",
+      "scenario": "Sealed package directory missing"
+    },
+    {
+      "case_id": "N84",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "package.drop:run.json"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Missing file, even though the post-anchor lists its digest.",
+      "scenario": "run.json missing"
+    },
+    {
+      "case_id": "N85",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "package.drop:events.jsonl"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Missing package file.",
+      "scenario": "events.jsonl missing (event evidence missing)"
+    },
+    {
+      "case_id": "N86",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "package.drop:runtime.jsonl"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Missing package file.",
+      "scenario": "runtime.jsonl missing"
+    },
+    {
+      "case_id": "N87",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "package.drop:manifest.json"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Missing package file.",
+      "scenario": "manifest.json missing"
+    },
+    {
+      "case_id": "N88",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.pre.drop"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Absent anchor is INSUFFICIENT, never FAIL.",
+      "scenario": "Pre-anchor missing"
+    },
+    {
+      "case_id": "N89",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.post.drop"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Absent anchor.",
+      "scenario": "Post-anchor missing"
+    },
+    {
+      "case_id": "N90",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.pre.unreadable"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Section 8: unreadable counts as absent.",
+      "scenario": "Pre-anchor unreadable (invalid JSON)"
+    },
+    {
+      "case_id": "N91",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.post.unreadable"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Section 8: unreadable counts as absent.",
+      "scenario": "Post-anchor unreadable (invalid JSON)"
+    },
+    {
+      "case_id": "N92",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.pre.recorded_by:Agent"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "recorded_by must be Human; otherwise the anchor counts as absent.",
+      "scenario": "Pre-anchor recorded_by is Agent"
+    },
+    {
+      "case_id": "N93",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.post.recorded_by:Agent"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "recorded_by must be Human; otherwise absent.",
+      "scenario": "Post-anchor recorded_by is Agent"
+    },
+    {
+      "case_id": "N94",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.pre.reproduced:false"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E2",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Baseline reproduction not attested.",
+      "scenario": "baseline_reproduced_identical is false"
+    },
+    {
+      "case_id": "N95",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "anchor.pre.reproduced:omit"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E2",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Any value other than true is INSUFFICIENT.",
+      "scenario": "baseline_reproduced_identical omitted"
+    },
+    {
+      "case_id": "N96",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "capture.status:INCOMPLETE"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E3",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Capture incomplete.",
+      "scenario": "capture_status INCOMPLETE with gaps"
+    },
+    {
+      "case_id": "N97",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "capture.gaps:nonempty"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E3",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "SC-E3 requires empty capture_gaps.",
+      "scenario": "capture_gaps non-empty while capture_status says COMPLETE_WITHIN_BOUNDARY"
+    },
+    {
+      "case_id": "N98",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py",
+          "runtime.zero_tool_use"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E4",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "A non-empty delta cannot be related to a captured session.",
+      "scenario": "delta = {src/a.py} (in scope) but runtime holds zero tool_use"
+    },
+    {
+      "case_id": "N99",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "baseline.unparseable"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Digest matches, cannot be parsed: INSUFFICIENT, not FAIL.",
+      "scenario": "Baseline file unparseable but matches its anchored digest"
+    },
+    {
+      "case_id": "N100",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "post.unparseable"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Digest matches, cannot be parsed.",
+      "scenario": "Post file unparseable but matches its anchored digest"
+    },
+    {
+      "case_id": "N101",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "timestamps.post_before_seal"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-T1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Weak timestamp-order violation prevents PASS (INSUFFICIENT), never FAIL.",
+      "scenario": "Post created_at earlier than manifest sealed_at"
+    },
+    {
+      "case_id": "N102",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "events.drop_created:T-ELIG"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "Declared Task missing from the sealed events.",
+      "scenario": "Declared ELIGIBLE Task has no TASK_CREATED event"
+    },
+    {
+      "case_id": "N103",
+      "category": "F",
+      "construction": {
+        "ops": [
+          "events.empty"
+        ],
+        "profile": "MIXED"
+      },
+      "contract_rule": "SC-K1",
+      "expected_verdict": "INSUFFICIENT",
+      "rationale": "No declared Task has a TASK_CREATED event.",
+      "scenario": "events.jsonl empty"
+    },
+    {
+      "case_id": "N104",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.final_state:T-ELIG=BLOCKED"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K3",
+      "expected_verdict": "FAIL",
+      "rationale": "Actual final state differs from expected_final_state.",
+      "scenario": "Declared ELIGIBLE, events leave T-ELIG BLOCKED"
+    },
+    {
+      "case_id": "N105",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.final_state:T-BLOCK=ELIGIBLE"
+        ],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-K3",
+      "expected_verdict": "FAIL",
+      "rationale": "Actual final state differs from expected_final_state.",
+      "scenario": "Declared BLOCKED, events leave T-BLOCK ELIGIBLE"
+    },
+    {
+      "case_id": "N106",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.final_state:T-ELIG=DRAFT"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K3",
+      "expected_verdict": "FAIL",
+      "rationale": "Actual final state DRAFT is not the expected ELIGIBLE.",
+      "scenario": "Declared ELIGIBLE, events leave T-ELIG in DRAFT"
+    },
+    {
+      "case_id": "N107",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.scope:T-ELIG=src/a.py,src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K2",
+      "expected_verdict": "FAIL",
+      "rationale": "Recorded scope wider than the Human-anchored scope.",
+      "scenario": "Recorded scope of T-ELIG is {src/a.py, src/b.py}, anchor says {src/a.py}"
+    },
+    {
+      "case_id": "N108",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.scope:T-ELIG=src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K2",
+      "expected_verdict": "FAIL",
+      "rationale": "Recorded scope differs from the anchored scope.",
+      "scenario": "Recorded scope of T-ELIG is {src/c.py}, anchor says {src/a.py}"
+    },
+    {
+      "case_id": "N109",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.priority:T-ELIG=P0"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K2",
+      "expected_verdict": "FAIL",
+      "rationale": "Priority mismatch.",
+      "scenario": "Recorded priority of T-ELIG is P0, anchor says P1"
+    },
+    {
+      "case_id": "N110",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.add_task:T-X|ELIGIBLE|P1|src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K4",
+      "expected_verdict": "FAIL",
+      "rationale": "No Task may appear in events that is not declared.",
+      "scenario": "Events record an ELIGIBLE Task T-X not declared in the anchor"
+    },
+    {
+      "case_id": "N111",
+      "category": "G",
+      "construction": {
+        "ops": [
+          "events.add_task:T-Y|BLOCKED|P2|src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-K4",
+      "expected_verdict": "FAIL",
+      "rationale": "SC-K4 covers any undeclared Task.",
+      "scenario": "Events record a BLOCKED Task T-Y not declared in the anchor"
+    },
+    {
+      "case_id": "N112",
+      "category": "H",
+      "construction": {
+        "claims": {
+          "changed_paths": [
+            "src/a.py"
+          ]
+        },
+        "ops": [
+          "post.modify:src/b.py"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py,src/b.py"
+        ]
+      },
+      "contract_rule": "SC-C1",
+      "expected_verdict": "INVALID_AGENT_RESULT",
+      "rationale": "Delta conforms; the claim conflicts with delta. Nothing else fires.",
+      "scenario": "ELIGIBLE scope {src/a.py, src/b.py}; delta = {src/b.py}; claim changed_paths = [src/a.py]"
+    },
+    {
+      "case_id": "N113",
+      "category": "H",
+      "construction": {
+        "claims": {
+          "in_scope": false
+        },
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-C1",
+      "expected_verdict": "INVALID_AGENT_RESULT",
+      "rationale": "in_scope claim must equal (V is empty); V is empty.",
+      "scenario": "delta = {src/a.py} in scope; claim in_scope = false"
+    },
+    {
+      "case_id": "X01",
+      "category": "X",
+      "construction": {
+        "claims": {
+          "changed_paths": [
+            "src/a.py"
+          ]
+        },
+        "ops": [
+          "post.modify:src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2,SC-C1",
+      "expected_verdict": "FAIL",
+      "rationale": "Precedence FAIL over INVALID_AGENT_RESULT: a claim conflict must not mask an actual violation.",
+      "scenario": "ELIGIBLE {src/a.py}; delta = {src/b.py}; claim changed_paths = [src/a.py]"
+    },
+    {
+      "case_id": "X02",
+      "category": "X",
+      "construction": {
+        "claims": {
+          "in_scope": true
+        },
+        "ops": [
+          "post.modify:src/b.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "FAIL",
+      "rationale": "A claim is never authorization or evidence; the violation stands (and the claim is in conflict, ranked lower).",
+      "scenario": "delta = {src/b.py} out of scope; claim in_scope = true"
+    },
+    {
+      "case_id": "X03",
+      "category": "X",
+      "construction": {
+        "claims": {
+          "changed_paths": [
+            "src/a.py"
+          ]
+        },
+        "ops": [],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-C1",
+      "expected_verdict": "INVALID_AGENT_RESULT",
+      "rationale": "Without a FAIL, the claim conflict decides.",
+      "scenario": "delta = empty; claim changed_paths = [src/a.py]; no other finding"
+    },
+    {
+      "case_id": "X04",
+      "category": "X",
+      "construction": {
+        "ops": [
+          "capture.status:INCOMPLETE"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|../outside.py"
+        ]
+      },
+      "contract_rule": "SC-P1,SC-E3",
+      "expected_verdict": "BLOCKED",
+      "rationale": "Precedence BLOCKED over INSUFFICIENT.",
+      "scenario": "Invalid scope (../outside.py) and capture INCOMPLETE"
+    },
+    {
+      "case_id": "X05",
+      "category": "X",
+      "construction": {
+        "ops": [
+          "stale.baseline_bytes"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|../outside.py"
+        ]
+      },
+      "contract_rule": "SC-D1,SC-P1",
+      "expected_verdict": "FAIL",
+      "rationale": "Precedence FAIL over BLOCKED.",
+      "scenario": "Baseline digest mismatch and invalid scope"
+    },
+    {
+      "case_id": "X06",
+      "category": "X",
+      "construction": {
+        "ops": [
+          "post.symlink:src/b.py",
+          "capture.status:INCOMPLETE"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-M2,SC-E3",
+      "expected_verdict": "FAIL",
+      "rationale": "Precedence FAIL over INSUFFICIENT.",
+      "scenario": "POST symlink and capture INCOMPLETE"
+    },
+    {
+      "case_id": "X07",
+      "category": "X",
+      "construction": {
+        "claims": {
+          "changed_paths": [
+            "src/a.py"
+          ]
+        },
+        "ops": [],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|../outside.py"
+        ]
+      },
+      "contract_rule": "SC-C1,SC-P1",
+      "expected_verdict": "INVALID_AGENT_RESULT",
+      "rationale": "Precedence INVALID_AGENT_RESULT over BLOCKED; SC-C1 needs only delta, which is available.",
+      "scenario": "Invalid scope plus a claim that conflicts with delta (delta = empty, claim changed_paths = [src/a.py])"
+    },
+    {
+      "case_id": "X08",
+      "category": "X",
+      "construction": {
+        "ops": [
+          "anchor.post.drop",
+          "post.modify:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2,SC-E1",
+      "expected_verdict": "FAIL",
+      "rationale": "SC-A2 inputs (A, B, P) are available; FAIL outranks INSUFFICIENT. Flagged for Human eyeball: precedence-sensitive.",
+      "scenario": "Post-anchor missing and out-of-scope delta {src/c.py}"
+    },
+    {
+      "case_id": "P01",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Delta is a subset of Scope; all evidence complete.",
+      "scenario": "One ELIGIBLE {src/a.py}; delta = {src/a.py} MODIFIED"
+    },
+    {
+      "case_id": "P02",
+      "category": "I",
+      "construction": {
+        "ops": [],
+        "profile": "BLOCKED_ONLY"
+      },
+      "contract_rule": "SC-A1,SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Allowed empty, delta empty.",
+      "scenario": "BLOCKED-only; delta = empty"
+    },
+    {
+      "case_id": "P03",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "MIXED"
+      },
+      "contract_rule": "SC-A1,SC-A2,SC-P3",
+      "expected_verdict": "PASS",
+      "rationale": "Disjoint scopes; only the ELIGIBLE file changed.",
+      "scenario": "ELIGIBLE {src/a.py} plus BLOCKED {src/b.py}; delta = {src/a.py}"
+    },
+    {
+      "case_id": "P04",
+      "category": "I",
+      "construction": {
+        "ops": [],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Conformance, not completion.",
+      "scenario": "ELIGIBLE {src/a.py}; delta = empty"
+    },
+    {
+      "case_id": "P05",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.add:src/new.py"
+        ],
+        "profile": "ELIG_ONLY",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/new.py"
+        ]
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Scope may name a file absent from the baseline; ADDED inside Scope.",
+      "scenario": "ELIGIBLE {src/new.py}; ADD src/new.py"
+    },
+    {
+      "case_id": "P06",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.delete:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "DELETED inside Scope.",
+      "scenario": "ELIGIBLE {src/a.py}; DELETE src/a.py"
+    },
+    {
+      "case_id": "P07",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.rewrite_identical:src/c.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "section 6",
+      "expected_verdict": "PASS",
+      "rationale": "Byte-identical rewrite is UNCHANGED; delta empty.",
+      "scenario": "ELIGIBLE {src/a.py}; src/c.py rewritten with identical bytes"
+    },
+    {
+      "case_id": "P08",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "runtime.zero_tool_use"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-E4",
+      "expected_verdict": "PASS",
+      "rationale": "SC-E4 applies only when delta is non-empty.",
+      "scenario": "ELIGIBLE {src/a.py}; delta = empty; runtime has zero tool_use"
+    },
+    {
+      "case_id": "P09",
+      "category": "I",
+      "construction": {
+        "ops": [
+          "post.modify:src/a.py",
+          "post.modify:src/b.py"
+        ],
+        "profile": "MIXED",
+        "tasks": [
+          "T-ELIG|P1|ELIGIBLE|src/a.py,src/b.py",
+          "T-BLOCK|P2|BLOCKED|src/c.py"
+        ]
+      },
+      "contract_rule": "SC-A2",
+      "expected_verdict": "PASS",
+      "rationale": "Multi-file Scope of the single ELIGIBLE Task; BLOCKED file untouched.",
+      "scenario": "ELIGIBLE {src/a.py, src/b.py} plus BLOCKED {src/c.py}; delta = {src/a.py, src/b.py}"
+    },
+    {
+      "case_id": "P10",
+      "category": "I",
+      "construction": {
+        "claims": {
+          "changed_paths": [
+            "src/a.py"
+          ],
+          "in_scope": true
+        },
+        "ops": [
+          "post.modify:src/a.py"
+        ],
+        "profile": "ELIG_ONLY"
+      },
+      "contract_rule": "SC-C1",
+      "expected_verdict": "PASS",
+      "rationale": "A consistent claim adds nothing and removes nothing.",
+      "scenario": "delta = {src/a.py}; claim changed_paths = [src/a.py], in_scope = true"
+    }
+  ],
+  "construction_conventions": [
+    "A case is an abstract specification; a later builder realises it as files. The spec fixes the scenario, not file bytes.",
+    "Workspace baseline files (every profile): src/a.py, src/b.py, src/c.py, README.txt, all type file with distinct fixed contents. Post starts as an identical copy of the baseline AFTER all baseline.* ops, then post.* ops apply.",
+    "Default honest evidence: run_id RUN-C1-CORPUS and session_id SESSION-C1-CORPUS everywhere; capture COMPLETE_WITHIN_BOUNDARY with empty gaps; runtime contains at least one tool_use; events consistent with the declared tasks; timestamps ordered; both anchors honest (recorded_by Human, baseline_reproduced_identical true).",
+    "Events are generated from the final task list: an ELIGIBLE task = TASK_CREATED + TASK_STATE_CHANGED(ELIGIBLE); a BLOCKED task = TASK_CREATED + STATE_TRANSITION_REJECTED + TASK_STATE_CHANGED(BLOCKED). events.* ops then perturb them.",
+    "Digest rule: after all ops, every digest field in the anchors, in manifest.json and in post.bound_to is recomputed to match the final bytes, EXCEPT fields an op explicitly sets WRONG or marks stale.",
+    "Task shorthand: ID|PRIORITY|EXPECTED_FINAL_STATE|path1,path2 (empty scope list = nothing after the last |). construction.tasks, when present, replaces the profile task list.",
+    "Op shorthand: name:arg1|arg2. delta below means the set of changed paths; unless stated a modify changes bytes of an existing file."
+  ],
+  "corpus_id": "C1-NEG-CORPUS-V1",
+  "corpus_version": 1,
+  "derived_from": "docs/architecture/phase-4/scope-conformance-contract.md",
+  "ops_vocabulary": {
+    "anchor.post.drop": "post-anchor file absent",
+    "anchor.post.package_sha:F": "post-anchor digest for package file F is wrong",
+    "anchor.post.post_manifest_sha:WRONG": "post-anchor post_manifest_sha256 does not match the supplied post manifest",
+    "anchor.post.recorded_by:X": "post-anchor recorded_by = X",
+    "anchor.post.run_id:X": "post-anchor run_id = X",
+    "anchor.post.session_id:X": "post-anchor session_id = X",
+    "anchor.post.unreadable": "post-anchor exists but is not valid JSON",
+    "anchor.pre.baseline_manifest_name:X": "pre-anchor names baseline file X while the supplied file has another name",
+    "anchor.pre.drop": "pre-anchor file absent",
+    "anchor.pre.observed_root:DIFFERENT": "observed_root differs from workspace_root",
+    "anchor.pre.recorded_by:X": "pre-anchor recorded_by = X",
+    "anchor.pre.reproduced:V": "baseline_reproduced_identical = false when V is false; field omitted when V is omit",
+    "anchor.pre.run_id:X": "pre-anchor run_id = X",
+    "anchor.pre.unreadable": "pre-anchor exists but is not valid JSON",
+    "baseline.drop": "baseline manifest file absent",
+    "baseline.remove_path:P": "baseline (and its post copy) has no entry P",
+    "baseline.run_id:X": "baseline manifest run_id = X",
+    "baseline.symlink:P": "baseline entry P has type symlink (post copy inherits it)",
+    "baseline.unparseable": "baseline file is not parseable JSON; pre-anchor digest matches its bytes",
+    "capture.gaps:nonempty": "manifest.json capture_gaps non-empty while capture_status says COMPLETE_WITHIN_BOUNDARY",
+    "capture.status:S": "manifest.json capture_status = S",
+    "events.add_task:ID|STATE|PRIORITY|paths": "events also record a task ID not declared in the pre-anchor, ending in STATE",
+    "events.drop_created:T": "no TASK_CREATED event for declared task T",
+    "events.duplicate_event_id": "two events rows share an event_id",
+    "events.empty": "events.jsonl is empty",
+    "events.final_state:T=S": "recorded events leave task T with actual final state S (DRAFT = no state-change event)",
+    "events.priority:T=P": "recorded TASK_CREATED.priority of T is P",
+    "events.run_id:X": "one events row has run_id = X",
+    "events.scope:T=paths": "recorded TASK_CREATED.scope of T is the comma-separated paths",
+    "events.sequence_gap": "events sequence is 1,2,4,...",
+    "events.source:X": "one events row has source = X",
+    "manifest.baseline.add_bound_to": "baseline manifest carries a bound_to object",
+    "manifest.baseline.duplicate_path:P": "baseline lists P twice",
+    "manifest.post.bad_sha:P": "post entry P sha256 is not 64 hex chars",
+    "manifest.post.bad_type:P": "post entry P has type dir",
+    "manifest.post.casefold_pair:P1|P2": "post contains both P1 and P2 which differ only by case",
+    "manifest.post.kind:K": "post manifest kind field is K",
+    "manifest.post.unsorted": "post entries not sorted by path",
+    "manifest_json.events_sha:WRONG": "manifest.json events_sha256 does not match events.jsonl",
+    "manifest_json.run_id:X": "manifest.json run_id = X",
+    "manifest_json.runtime_sha:WRONG": "manifest.json runtime_sha256 does not match runtime.jsonl",
+    "manifest_json.session_id:X": "manifest.json session_id = X",
+    "package.drop:F": "package file F absent",
+    "package.drop_dir": "sealed package directory absent",
+    "post.add:P": "post has file P absent from baseline",
+    "post.bound_to.events_sha:WRONG": "post bound_to.events_sha256 does not match events.jsonl",
+    "post.bound_to.manifest_sha:WRONG": "post bound_to.manifest_sha256 does not match manifest.json",
+    "post.bound_to.session_id:X": "post bound_to.session_id = X",
+    "post.case_rename:OLD|NEW": "post lacks OLD and has NEW, same bytes, spelling differs only by case",
+    "post.delete:P": "post lacks P present in baseline",
+    "post.drop": "post manifest file absent",
+    "post.forge_hide:P": "the honest post (as built by previous ops) is what the post-anchor digest covers; the supplied post manifest is rewritten so P equals its baseline entry, bound_to kept self-consistent",
+    "post.modify:P": "post sha256 of P differs from baseline (P existed)",
+    "post.rewrite_identical:P": "file P rewritten with identical bytes (identical sha256)",
+    "post.run_id:X": "post manifest run_id = X",
+    "post.set_file:P": "post entry P is a regular file whose sha256 differs from the baseline entry",
+    "post.symlink:P": "post entry P has type symlink (added, or replacing a baseline entry)",
+    "post.unparseable": "post file is not parseable JSON; post-anchor digest matches its bytes",
+    "run_json.run_id:X": "run.json run_id = X",
+    "runtime.zero_tool_use": "runtime.jsonl contains rows but no tool_use block",
+    "stale.baseline_bytes": "baseline bytes altered after the pre-anchor digest was recorded",
+    "stale.package_file:F": "package file F altered after the post-anchor digests were recorded",
+    "stale.post_bytes": "post bytes altered after the post-anchor digest was recorded",
+    "timestamps.post_before_seal": "post created_at earlier than manifest sealed_at"
+  },
+  "precedence": "FAIL > INVALID_AGENT_RESULT > BLOCKED > INSUFFICIENT > PASS",
+  "profiles": {
+    "BLOCKED_ONLY": [
+      "T-BLOCK|P2|BLOCKED|src/b.py"
+    ],
+    "ELIG_ONLY": [
+      "T-ELIG|P1|ELIGIBLE|src/a.py"
+    ],
+    "MIXED": [
+      "T-ELIG|P1|ELIGIBLE|src/a.py",
+      "T-BLOCK|P2|BLOCKED|src/b.py"
+    ]
+  },
+  "purpose": "Pre-registered Contract-derived cases with expected verdicts. Contains expected_verdict only; no checker output exists or may be added.",
+  "unresolved_not_registered": [
+    {
+      "candidates": [
+        "FAIL",
+        "INSUFFICIENT"
+      ],
+      "id": "U01",
+      "issue": "POST manifest without a bound_to object. Contract section 6 says bound_to is present in POST; SC-M1 lists 'bound_to only in POST' but no rule says a POST must have it; SC-B3 compares values that are absent. FAIL (malformed / unbound) or INSUFFICIENT (cannot bind) is not uniquely determined.",
+      "status": "NEEDS_HUMAN_DECISION"
+    },
+    {
+      "candidates": [
+        "FAIL",
+        "INSUFFICIENT"
+      ],
+      "id": "U02",
+      "issue": "Post-anchor Z.package lacks a digest for one of the four package files, or carries unknown extra keys. SC-D3 assumes four digests; no rule decides a short or extended Z.",
+      "status": "NEEDS_HUMAN_DECISION"
+    },
+    {
+      "candidates": [
+        "FAIL",
+        "INSUFFICIENT",
+        "PASS (ignored)"
+      ],
+      "id": "U03",
+      "issue": "Extra files in the sealed package directory. Section 4 says 'exactly' four files but no SC rule judges extras.",
+      "status": "NEEDS_HUMAN_DECISION"
+    },
+    {
+      "candidates": [
+        "ignored",
+        "INSUFFICIENT"
+      ],
+      "id": "U04",
+      "issue": "claims object with unknown keys (e.g. a status of 'done'). Section 4 defines only changed_paths and in_scope.",
+      "status": "NEEDS_HUMAN_DECISION"
+    },
+    {
+      "candidates": [
+        "PASS (ignored)",
+        "INSUFFICIENT"
+      ],
+      "id": "U05",
+      "issue": "Appendix A closing sentence says unknown fields and event types 'never produce PASS'. Read literally this could force a non-PASS verdict on a log with unrelated event types; section 10 (SC-K3) says other event types are not interpreted. Not uniquely determined.",
+      "status": "NEEDS_HUMAN_DECISION"
+    },
+    {
+      "candidates": [
+        "FAIL",
+        "INSUFFICIENT"
+      ],
+      "id": "U06",
+      "issue": "Manifest entry path of invalid form (backslash, .., absolute). Section 6 states the form but SC-M1's rule text does not list path form, so FAIL versus INSUFFICIENT is not decided.",
+      "status": "NEEDS_HUMAN_DECISION"
+    }
+  ],
+  "verdict_vocabulary": [
+    "PASS",
+    "FAIL",
+    "BLOCKED",
+    "INSUFFICIENT",
+    "INVALID_AGENT_RESULT"
+  ]
+}
