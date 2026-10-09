@@ -1,0 +1,3 @@
+# Hash-locked Phase 4 C1 files: keep bytes as committed (LF), no autocrlf conversion
+docs/architecture/phase-4/c1-negative-corpus-v3.json -text
+docs/architecture/phase-4/scope-conformance-contract.md -text
