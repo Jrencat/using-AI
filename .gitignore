@@ -13,3 +13,7 @@ desktop.ini
 *.local.md
 private/
 draft/
+
+# Python 字节码
+__pycache__/
+*.pyc
