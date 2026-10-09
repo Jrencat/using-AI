@@ -1,0 +1,1221 @@
+{
+  "registry_id": "CODEX-RECEIPT-PREREG-V2",
+  "mapping_version": 2,
+  "mapping_spec": "docs/architecture/phase-5/codex-receipt-mapping-v2.md",
+  "fixtures_dir": "phase-5-validation/codex_receipt/fixtures_v2",
+  "row_notation": {
+    "use": "[\"use\", raw_line, call_id, name, input]",
+    "res": "[\"res\", raw_line, call_id, content]"
+  },
+  "gap_notation": "[code, raw_line or null]; list sorted by (line with null first, code)",
+  "rule": "Expectations were written before the v2 adapter code existed and must not be edited to match its output. A change needs a new registry id and a Human decision.",
+  "cases": [
+    {
+      "id": "Q01",
+      "fixture": "q01_token_observed_shape.jsonl",
+      "kind": "positive",
+      "description": "observed token structure between a call and its output",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 1
+        }
+      },
+      "rationale": "T3: allowed shape is counted and ignored; pairing unaffected.",
+      "harness_blackbox": {
+        "input": "runtime.jsonl",
+        "capture_status": "COMPLETE_WITHIN_BOUNDARY",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "Q02",
+      "fixture": "q02_token_each_id_key_alone.jsonl",
+      "kind": "positive",
+      "description": "each of the five ID keys alone with numeric usage",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            8,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 5
+        }
+      },
+      "rationale": "T3: every allowed ID key may carry a string."
+    },
+    {
+      "id": "Q03",
+      "fixture": "q03_token_numeric_forms.jsonl",
+      "kind": "positive",
+      "description": "empty object, float, boolean, null, nested numeric objects",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            6,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 3
+        }
+      },
+      "rationale": "T3: objects may nest; number/boolean/null leaves are allowed; no ID key is required."
+    },
+    {
+      "id": "Q04",
+      "fixture": "q04_token_interleaved.jsonl",
+      "kind": "positive",
+      "description": "tokens before, between and after interleaved calls and outputs",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [
+          [
+            "use",
+            3,
+            "call_a",
+            "shell",
+            {
+              "command": "ls"
+            }
+          ],
+          [
+            "use",
+            4,
+            "call_b",
+            "shell",
+            {
+              "command": "pwd"
+            }
+          ],
+          [
+            "res",
+            6,
+            "call_b",
+            "/w"
+          ],
+          [
+            "res",
+            8,
+            "call_a",
+            "a.txt"
+          ]
+        ],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 4
+        }
+      },
+      "rationale": "Row order is raw line order; ignored records are counted exactly.",
+      "harness_blackbox": {
+        "input": "runtime.jsonl",
+        "capture_status": "COMPLETE_WITHIN_BOUNDARY",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "Q05",
+      "fixture": "q05_token_only_session.jsonl",
+      "kind": "positive",
+      "description": "valid session with only token records",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 2
+        }
+      },
+      "rationale": "COMPLETE with an empty runtime.jsonl; the Harness reports its own gap.",
+      "harness_blackbox": {
+        "input": "runtime.jsonl",
+        "capture_status": "INCOMPLETE",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "Q06",
+      "fixture": "q01_token_observed_shape.jsonl",
+      "kind": "positive",
+      "description": "Q01 with CRLF line terminators; output must equal Q01's",
+      "expected": {
+        "adapter_status": "COMPLETE",
+        "exit_code": 0,
+        "gaps": [],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": false,
+        "ignored_counts": {
+          "token_usage_record": 1
+        }
+      },
+      "rationale": "Raw-line hash excludes the terminator.",
+      "harness_blackbox": {
+        "input": "runtime.jsonl",
+        "capture_status": "COMPLETE_WITHIN_BOUNDARY",
+        "valid_package": true
+      },
+      "derived": "LF_TO_CRLF"
+    },
+    {
+      "id": "T01",
+      "fixture": "t01_other_toplevel_string.jsonl",
+      "kind": "negative",
+      "description": "string under a non-ID top-level key",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: strings are allowed only under the five ID keys.",
+      "harness_blackbox": {
+        "input": "runtime.partial.jsonl",
+        "capture_status": "COMPLETE_WITHIN_BOUNDARY",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "T02",
+      "fixture": "t02_nested_string.jsonl",
+      "kind": "negative",
+      "description": "string nested in an object, mixed with legal leaves",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: nested strings are not allowed."
+    },
+    {
+      "id": "T03",
+      "fixture": "t03_nested_id_key_string.jsonl",
+      "kind": "negative",
+      "description": "ID key name used for a string below the top level",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: ID keys count only at the payload top level."
+    },
+    {
+      "id": "T04",
+      "fixture": "t04_nonempty_array.jsonl",
+      "kind": "negative",
+      "description": "non-empty array",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: no arrays."
+    },
+    {
+      "id": "T05",
+      "fixture": "t05_empty_array.jsonl",
+      "kind": "negative",
+      "description": "empty array",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: no arrays, including empty ones."
+    },
+    {
+      "id": "T06",
+      "fixture": "t06_nested_array.jsonl",
+      "kind": "negative",
+      "description": "array nested in objects",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: no arrays at any depth."
+    },
+    {
+      "id": "T07",
+      "fixture": "t07_missing_payload.jsonl",
+      "kind": "negative",
+      "description": "no payload key",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: payload must be an object."
+    },
+    {
+      "id": "T08",
+      "fixture": "t08_null_payload.jsonl",
+      "kind": "negative",
+      "description": "null payload",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: payload must be an object."
+    },
+    {
+      "id": "T09",
+      "fixture": "t09_array_payload.jsonl",
+      "kind": "negative",
+      "description": "array payload",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: payload must be an object."
+    },
+    {
+      "id": "T10",
+      "fixture": "t10_string_payload.jsonl",
+      "kind": "negative",
+      "description": "string payload",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: payload must be an object."
+    },
+    {
+      "id": "T11",
+      "fixture": "t11_number_payload.jsonl",
+      "kind": "negative",
+      "description": "number payload",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: payload must be an object."
+    },
+    {
+      "id": "T12",
+      "fixture": "t12_id_key_number.jsonl",
+      "kind": "negative",
+      "description": "ID key with a number value",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: a present ID key must be a string."
+    },
+    {
+      "id": "T13",
+      "fixture": "t13_id_key_null.jsonl",
+      "kind": "negative",
+      "description": "ID key with null",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: a present ID key must be a string."
+    },
+    {
+      "id": "T14",
+      "fixture": "t14_id_key_object.jsonl",
+      "kind": "negative",
+      "description": "ID key with an object value",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: a present ID key must be a string."
+    },
+    {
+      "id": "T15",
+      "fixture": "t15_id_key_array.jsonl",
+      "kind": "negative",
+      "description": "ID key with an array value",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: a present ID key must be a string; arrays are not allowed."
+    },
+    {
+      "id": "T16",
+      "fixture": "t16_valid_then_invalid.jsonl",
+      "kind": "negative",
+      "description": "one valid and one invalid token record",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            4
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            5,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {
+          "token_usage_record": 1
+        }
+      },
+      "rationale": "Only the valid record is counted; the invalid one is a gap."
+    },
+    {
+      "id": "T17",
+      "fixture": "t17_tool_shaped_keys_in_token.jsonl",
+      "kind": "negative",
+      "description": "token record whose payload mimics a tool call",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "TOKEN_USAGE_UNEXPECTED_SHAPE",
+            2
+          ]
+        ],
+        "runtime_rows": [],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "T3: no row is ever derived from a token record."
+    },
+    {
+      "id": "T18",
+      "fixture": "t18_valid_token_with_unpaired_call.jsonl",
+      "kind": "negative",
+      "description": "valid token record and an unanswered call",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "UNPAIRED_CALL",
+            2
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {
+          "token_usage_record": 1
+        }
+      },
+      "rationale": "Ignoring tokens must not mask an unanswered call.",
+      "harness_blackbox": {
+        "input": "runtime.partial.jsonl",
+        "capture_status": "INCOMPLETE",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "T19",
+      "fixture": "t19_valid_token_with_orphan_output.jsonl",
+      "kind": "negative",
+      "description": "valid token record and an orphan output",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "UNPAIRED_OUTPUT",
+            3
+          ]
+        ],
+        "runtime_rows": [],
+        "partial_output_allowed": true,
+        "ignored_counts": {
+          "token_usage_record": 1
+        }
+      },
+      "rationale": "Ignoring tokens must not mask an orphan output."
+    },
+    {
+      "id": "C01",
+      "fixture": "c01_compacted_between_call_output.jsonl",
+      "kind": "negative",
+      "description": "compacted between a call and its output",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "Compaction is an integrity gap.",
+      "harness_blackbox": {
+        "input": "runtime.partial.jsonl",
+        "capture_status": "COMPLETE_WITHIN_BOUNDARY",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "C02",
+      "fixture": "c02_compacted_embeds_tool_objects.jsonl",
+      "kind": "negative",
+      "description": "compacted payload embeds tool-call-shaped objects",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            4
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            3,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "The payload is never parsed: no row from embedded objects."
+    },
+    {
+      "id": "C03",
+      "fixture": "c03_multiple_compacted.jsonl",
+      "kind": "negative",
+      "description": "three compacted records",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            2
+          ],
+          [
+            "COMPACTION_PRESENT",
+            4
+          ],
+          [
+            "COMPACTION_PRESENT",
+            6
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            3,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            5,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "One gap per compacted record."
+    },
+    {
+      "id": "C04",
+      "fixture": "c04_compacted_embeds_output_for_unanswered_call.jsonl",
+      "kind": "negative",
+      "description": "compacted embeds an output for an unanswered call",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "UNPAIRED_CALL",
+            2
+          ],
+          [
+            "COMPACTION_PRESENT",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_x",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "An embedded output must not pair with a real call.",
+      "harness_blackbox": {
+        "input": "runtime.partial.jsonl",
+        "capture_status": "INCOMPLETE",
+        "valid_package": true
+      }
+    },
+    {
+      "id": "C05",
+      "fixture": "c05_compacted_without_payload.jsonl",
+      "kind": "negative",
+      "description": "compacted with no payload",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "COMPACTION_PRESENT does not depend on the payload."
+    },
+    {
+      "id": "C06",
+      "fixture": "c06_compacted_with_valid_tokens.jsonl",
+      "kind": "negative",
+      "description": "compacted together with valid token records",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            4
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            3,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            6,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "partial_output_allowed": true,
+        "ignored_counts": {
+          "token_usage_record": 2
+        }
+      },
+      "rationale": "Token handling does not hide compaction."
+    },
+    {
+      "id": "C07",
+      "fixture": "c07_compacted_only.jsonl",
+      "kind": "negative",
+      "description": "session with only compacted",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "COMPACTION_PRESENT",
+            2
+          ]
+        ],
+        "runtime_rows": [],
+        "partial_output_allowed": true,
+        "ignored_counts": {}
+      },
+      "rationale": "Gap even with no tool rows."
+    }
+  ],
+  "v1_regression": {
+    "source_registry": "docs/architecture/phase-5/codex-receipt-preregistration.json",
+    "fixtures_dir": "phase-5-validation/codex_receipt/fixtures",
+    "rule": "All 26 v1 cases, run with mapping version 2, must give the same adapter_status, exit_code, gaps, runtime_rows and ignored_counts as that locked registry states."
+  },
+  "default_version_cases": [
+    {
+      "id": "D01",
+      "fixture": "q01_token_observed_shape.jsonl",
+      "description": "no flag selects mapping v1: the token record is an unknown type",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "UNKNOWN_RECORD_TYPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "mapping_version_in_provenance": 1
+      }
+    },
+    {
+      "id": "D02",
+      "fixture": "c01_compacted_between_call_output.jsonl",
+      "description": "no flag selects mapping v1: compacted is an unknown type",
+      "expected": {
+        "adapter_status": "INCOMPLETE",
+        "exit_code": 2,
+        "gaps": [
+          [
+            "UNKNOWN_RECORD_TYPE",
+            3
+          ]
+        ],
+        "runtime_rows": [
+          [
+            "use",
+            2,
+            "call_1",
+            "shell",
+            {
+              "command": "echo hi"
+            }
+          ],
+          [
+            "res",
+            4,
+            "call_1",
+            "hi"
+          ]
+        ],
+        "mapping_version_in_provenance": 1
+      }
+    }
+  ]
+}
