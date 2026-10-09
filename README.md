@@ -10,6 +10,8 @@
 
 两份文件内容一一对应，只在「是否使用 slash command」上有差异，可按你的工具链任选其一。
 
+> 本仓库还包含 Agent-Native Protocol / Harness 的设计与有限范围验证。想知道现在能用什么、不能用什么：见 [`docs/architecture/ADOPTION.md`](./docs/architecture/ADOPTION.md)。
+
 ---
 
 ## 解决什么问题
