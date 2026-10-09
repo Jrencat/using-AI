@@ -1,0 +1,2 @@
+{"timestamp":"2026-01-01T00:00:01Z","ordinal":1,"type":"response_item","payload":{"type":"function_call","id":"fc1","arguments":"{\"command\":\"echo hi\"}","call_id":"call_1","name":"shell"}}
+{"timestamp":"2026-01-01T00:00:02Z","ordinal":2,"type":"response_item","payload":{"type":"function_call_output","id":"fo2","call_id":"call_1","output":"hi"}}
