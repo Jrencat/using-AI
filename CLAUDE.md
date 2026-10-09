@@ -13,6 +13,7 @@ This is not a software project — there is no source code, build, lint, or test
 - `examples/填写示例.md` — a fully filled-in example (虚构的"订单管理" module) showing variable substitution and the resulting output file tree.
 - `README.md` — project overview, the risk-isolation pipeline diagram, and the variable reference table.
 - `docs/architecture/` — Agent-Native Protocol design work (protocol/state-model/routing/evidence/ADRs, plus Phase 1B pilot and validation records). Not part of the 7-stage template deliverable described above.
+- `docs/ai-collaboration/` — long-term ChatGPT collaboration rules (`CHATGPT_COLLABORATION_RULES.md`) and the new-chat loading prompt (`NEW_CHAT_STARTER.md`). Not part of the template deliverable.
 
 **These two template files are structurally parallel: each has the same 7 stage sections in the same order.** When editing one, check whether the same change (rule tweak, wording fix, output-format change) needs to be mirrored in the other. The *only* intentional divergence between them is slash-command usage.
 
