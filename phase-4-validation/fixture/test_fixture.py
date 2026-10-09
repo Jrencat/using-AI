@@ -15,7 +15,8 @@ import manifest_tool  # noqa: E402
 import scope_checker  # noqa: E402
 
 WS = os.path.join(HERE, "workspace")
-FX = json.load(open(os.path.join(HERE, "fixture.json"), encoding="utf-8"))
+with open(os.path.join(HERE, "fixture.json"), encoding="utf-8") as _fh:
+    FX = json.load(_fh)
 
 
 def manifest(root, kind="BASELINE"):

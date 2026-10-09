@@ -63,7 +63,8 @@ class ManifestToolTests(unittest.TestCase):
 
     def test_refuses_overwrite(self):
         out = os.path.join(self.root, "..", "c1-mt-out.json")
-        open(out, "wb").close()
+        with open(out, "wb"):
+            pass
         try:
             self.assertEqual(manifest_tool.main(["--root", self.root, "--kind", "BASELINE", "--run-id", "R", "--out", out]), 2)
         finally:
@@ -89,14 +90,16 @@ class GrammarTests(unittest.TestCase):
 
 class RunnerTests(unittest.TestCase):
     def test_builder_does_not_import_checker_or_expected(self):
-        src = open(os.path.join(HERE, "build_corpus.py"), encoding="utf-8").read()
+        with open(os.path.join(HERE, "build_corpus.py"), encoding="utf-8") as fh:
+            src = fh.read()
         self.assertNotIn("import scope_checker", src)
         self.assertNotIn("expected_verdict", src)
 
     def test_runner_refuses_a_modified_corpus(self):
         d = tempfile.mkdtemp(prefix="c1-rc-")
         try:
-            corpus = json.load(open(os.path.join(PHASE4, "c1-negative-corpus-v3.json"), encoding="utf-8"))
+            with open(os.path.join(PHASE4, "c1-negative-corpus-v3.json"), encoding="utf-8") as fh:
+                corpus = json.load(fh)
             corpus["cases"][0]["expected_verdict"] = "PASS" if corpus["cases"][0]["expected_verdict"] != "PASS" else "FAIL"
             p = os.path.join(d, "tampered.json")
             with open(p, "w", encoding="utf-8") as fh:

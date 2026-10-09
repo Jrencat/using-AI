@@ -53,14 +53,20 @@ class AnchorTests(unittest.TestCase):
                 "--out", os.path.join(self.human, out)]
 
     def load(self, name):
-        return json.load(open(os.path.join(self.human, name), encoding="utf-8"))
+        with open(os.path.join(self.human, name), encoding="utf-8") as fh:
+            return json.load(fh)
+
+    @staticmethod
+    def read_bytes(path):
+        with open(path, "rb") as fh:
+            return fh.read()
 
     def test_pre_anchor_content(self):
         self.assertEqual(self.pre(), 0)
         A = self.load("A.json")
         self.assertEqual(A["recorded_by"], "Human")
         self.assertEqual(A["baseline_manifest"], "b1.json")
-        self.assertEqual(A["baseline_sha256"], anchor_tool.sha(open(self.b1, "rb").read()))
+        self.assertEqual(A["baseline_sha256"], anchor_tool.sha(self.read_bytes(self.b1)))
         self.assertIs(A["baseline_reproduced_identical"], True)
         self.assertEqual([(t["task_id"], t["priority"], t["scope"], t["expected_final_state"]) for t in A["tasks"]],
                          [("T-CALC", "P0", ["src/calc.py"], "ELIGIBLE"), ("T-REPORT", "P2", ["src/report.py"], "BLOCKED")])
@@ -69,7 +75,7 @@ class AnchorTests(unittest.TestCase):
     def test_post_anchor_content(self):
         self.assertEqual(anchor_tool.main(self.post_args()), 0)
         Z = self.load("Z.json")
-        self.assertEqual(Z["post_manifest_sha256"], anchor_tool.sha(open(self.post, "rb").read()))
+        self.assertEqual(Z["post_manifest_sha256"], anchor_tool.sha(self.read_bytes(self.post)))
         self.assertEqual(set(Z["package"]), set(anchor_tool.PACKAGE_FILES))
         self.assertEqual(Z["package"]["run.json"], anchor_tool.sha(b"fake run.json"))
 
@@ -91,7 +97,7 @@ class AnchorTests(unittest.TestCase):
         self.assertEqual(self.pre(out="A2.json"), 2)  # baselines differ
         self.assertFalse(os.path.exists(os.path.join(self.human, "A2.json")))
         with open(self.b2, "wb") as fh:
-            fh.write(open(self.b1, "rb").read())
+            fh.write(self.read_bytes(self.b1))
         self.assertEqual(self.pre(out="A3.json", scenario="NOPE"), 2)
         self.assertEqual(self.pre(out=os.path.join(self.ws, "A.json")), 2)  # out inside workspace
         self.assertEqual(self.pre(out="A4.json", b2=os.path.join(self.d, "missing.json")), 2)
