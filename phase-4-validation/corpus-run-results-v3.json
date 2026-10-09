@@ -1,0 +1,1422 @@
+{
+  "cases": 143,
+  "corpus_canonical_sha256": "899218bbe990c5e97a6b700268e7ed1ba8f8b527df9daf2a439159cfabfbdd95",
+  "corpus_id": "C1-NEG-CORPUS-V3",
+  "matched": 143,
+  "mismatched": 0,
+  "results": [
+    {
+      "actual": "FAIL",
+      "case_id": "N01",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N02",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N03",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "case_id": "N04",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N10",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N11",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N12",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N13",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N14",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N15",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N16",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N17",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N05",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P4:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N18",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P3:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N19",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P4:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N20",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P4:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N06",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P7:BLOCKED"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N07",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N08",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N09",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-M2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N21",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M2:FAIL",
+        "SC-P7:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N22",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P7:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N23",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N24",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N25",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N26",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N27",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N28",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N29",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N30",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N31",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N32",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N33",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N34",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P2:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N35",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P2:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N36",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N37",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N38",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N39",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N40",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N41",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P6:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N42",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P8:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N43",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P5:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N44",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P6:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N45",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P6:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N46",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P6:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N47",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "N48",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N49",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N50",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N51",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N52",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N53",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N54",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N55",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL",
+        "SC-D3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N56",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N57",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL",
+        "SC-D3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N58",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N59",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N60",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N61",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N62",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N63",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N64",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N65",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N66",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N67",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N68",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N69",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N70",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N71",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B4:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N72",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B4:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N73",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-B4:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N74",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N75",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N76",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N77",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N78",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N79",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N80",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N81",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N82",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N83",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N84",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N85",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N86",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N87",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N88",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N89",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N90",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N91",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N92",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N93",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N94",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E2:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N95",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E2:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N96",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E3:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N97",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E3:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N98",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E4:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N99",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N100",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N101",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-T1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N102",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-K1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "N103",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-K1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N104",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N105",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N106",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K3:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N107",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N108",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N109",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N110",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K4:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "N111",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-K4:FAIL"
+      ]
+    },
+    {
+      "actual": "INVALID_AGENT_RESULT",
+      "case_id": "N112",
+      "error": null,
+      "expected": "INVALID_AGENT_RESULT",
+      "match": true,
+      "rules": [
+        "SC-C1:INVALID_AGENT_RESULT"
+      ]
+    },
+    {
+      "actual": "INVALID_AGENT_RESULT",
+      "case_id": "N113",
+      "error": null,
+      "expected": "INVALID_AGENT_RESULT",
+      "match": true,
+      "rules": [
+        "SC-C1:INVALID_AGENT_RESULT"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "X01",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-C1:INVALID_AGENT_RESULT"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "X02",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-C1:INVALID_AGENT_RESULT"
+      ]
+    },
+    {
+      "actual": "INVALID_AGENT_RESULT",
+      "case_id": "X03",
+      "error": null,
+      "expected": "INVALID_AGENT_RESULT",
+      "match": true,
+      "rules": [
+        "SC-C1:INVALID_AGENT_RESULT"
+      ]
+    },
+    {
+      "actual": "BLOCKED",
+      "case_id": "X04",
+      "error": null,
+      "expected": "BLOCKED",
+      "match": true,
+      "rules": [
+        "SC-E3:INSUFFICIENT",
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "X05",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-D1:FAIL",
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "X06",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-E3:INSUFFICIENT",
+        "SC-M2:FAIL"
+      ]
+    },
+    {
+      "actual": "INVALID_AGENT_RESULT",
+      "case_id": "X07",
+      "error": null,
+      "expected": "INVALID_AGENT_RESULT",
+      "match": true,
+      "rules": [
+        "SC-C1:INVALID_AGENT_RESULT",
+        "SC-P1:BLOCKED"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "X08",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL",
+        "SC-E1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P01",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P02",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P03",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P04",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P05",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P06",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P07",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P08",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P09",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "P10",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "U01",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E5:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "U02-A",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-E5:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "case_id": "U02-B",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "U03",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "U04",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "PASS",
+      "case_id": "U05",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    },
+    {
+      "actual": "INSUFFICIENT",
+      "case_id": "U05-B",
+      "error": null,
+      "expected": "INSUFFICIENT",
+      "match": true,
+      "rules": [
+        "SC-K1:INSUFFICIENT"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "U05-C",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-A2:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "U06",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "U06-B",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "FAIL",
+      "case_id": "U06-C",
+      "error": null,
+      "expected": "FAIL",
+      "match": true,
+      "rules": [
+        "SC-M1:FAIL"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "case_id": "U06-E",
+      "error": null,
+      "expected": "PASS",
+      "match": true,
+      "rules": []
+    }
+  ]
+}
