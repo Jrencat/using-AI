@@ -1,8 +1,14 @@
 # Repository Guidelines
 
+## Stage 3 Development Entry
+
+For a natural-language request to implement or fix something, read and follow [docs/workflow/develop.md](docs/workflow/develop.md) once using the current request as the task. This is the shared workflow source for Codex and Claude Code; Codex does not need or invoke Claude's `/develop` command. Discussion and review requests retain their original intent. Follow user instructions and applicable repository constraints; do not reload unchanged rules each turn.
+
+The seven-stage structure and variable rules below govern the original templates when editing or explicitly using them, not every Stage 3 task. Preserve frozen Stage 2 assets and historical conclusions; do not resume Phase 4/5 or load architecture history for ordinary development. The real business pilot is waiting for an actual task; see `docs/workflow/pilot-001.md` only when working on that pilot.
+
 ## Project Structure & Module Organization
 
-This repository contains Chinese-language prompt templates for a seven-stage, spec-driven AI development workflow; it is not an executable application.
+This repository contains Stage 1 prompt templates, Stage 2 historical Protocol / Harness tools, and the Stage 3 shared development workflow; it is not a business application.
 
 - The two root-level `*研发流水线提示词模板.md` files are the primary deliverables: one for Claude/OpenSpec slash commands and one for Codex or generic agents.
 - `examples/填写示例.md` shows a completed variable substitution and expected artifact layout.
@@ -11,7 +17,7 @@ This repository contains Chinese-language prompt templates for a seven-stage, sp
 
 ## Build, Test, and Development Commands
 
-There is no package manifest, build system, linter, or automated test suite. Validate documentation changes by reviewing Markdown rendering and cross-file consistency:
+There is no repo-wide package manifest, build, lint or test command. Historical Python tools have their own tests; do not run those for unrelated workflow documentation changes. Validate documentation changes by reviewing Markdown rendering and cross-file consistency:
 
 ```powershell
 rg "{{NEW_VARIABLE}}" README.md examples *.md
