@@ -4,6 +4,8 @@ Read this first, then the closeout docs named below. This is a state index, not 
 
 ## Current direction — 2026-10-19
 
+Stage 3 implementation update: `.claude/commands/develop.md` is the minimum entry; `/develop <requirement>` and natural-language requests via CLAUDE.md share one workflow. Start with `docs/workflow/README.md`, not the historical Phase records. Native Claude Code execution and the first real-code pilot are pending: no suitable product-code task was found in this repository; see `docs/workflow/pilot-001.md`. Next: apply the entry to a real, reversible low-risk task and record actual cost and quality. No efficiency improvement is claimed yet. The user reports the Stage 2 Release is published; it was not re-audited in this task.
+
 Project Stage 2 (Protocol / Harness experiment, internal Phase 1–5) has received a **product-direction closeout**: its original product route ends without claiming the expected usable workflow or efficiency benefits were achieved. See [Stage 2 closeout](docs/architecture/stage-2-closeout.md) and [Release draft](docs/releases/phase-2-closeout.md). This is distinct from internal Phase 2's historical PASS.
 
 Preserve all historical Phase 1–5 conclusions. Phase 4 remains not formally closed (H3); C1 is bounded PASS only. Phase 5 remains incomplete: offline adapter/mapping accepted, P5-2 INSUFFICIENT — CLOSED, P5-3/4 not authorized or started. The historical `IN PROGRESS` labels and §I below record the prior route, not current instructions to resume it. H2/H4 remain historical unresolved decisions, not the default next step.

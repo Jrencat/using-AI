@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-This is not a software project — there is no source code, build, lint, or test tooling. It is a collection of **Chinese-language prompt templates** for running a 7-stage "Spec-Driven Development" pipeline with a coding AI agent (Claude Code or Codex). The deliverable is the templates themselves; changes here are edits to prompt text, not code.
+This repository holds Stage 1 Chinese prompt templates, Stage 2 historical Protocol / Harness experiments (including Python tools), and the Stage 3 minimum development workflow. It is not a business application; there is no repo-wide build or test command. Run only checks relevant to changed files.
+
+## Stage 3 development entry
+
+For a natural-language request to implement or fix something, read `.claude/commands/develop.md` once and execute it using the current request in place of `$ARGUMENTS`; do not require the user to type `/develop` first. Discussion and review requests retain their original intent. `/develop <requirement>` explicitly invokes the same workflow. See `docs/workflow/README.md` for installation in a real code repository.
+
+This is a separate candidate workflow. The seven-stage isolation and variable rules below govern the original templates when editing or explicitly using them; they do not force every Stage 3 task through seven prompts. Preserve frozen Stage 2 assets and historical conclusions. Do not load HANDOFF or architecture history for ordinary development unless the task needs them. No real product-code pilot has been completed yet; see `docs/workflow/pilot-001.md`.
 
 ## File map
 
