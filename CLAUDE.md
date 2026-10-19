@@ -8,7 +8,7 @@ This repository holds Stage 1 Chinese prompt templates, Stage 2 historical Proto
 
 ## Stage 3 development entry
 
-For a natural-language request to implement or fix something, read `.claude/commands/develop.md` once and execute it using the current request in place of `$ARGUMENTS`; do not require the user to type `/develop` first. Discussion and review requests retain their original intent. `/develop <requirement>` explicitly invokes the same workflow. See `docs/workflow/README.md` for installation in a real code repository.
+For a natural-language request to implement or fix something, read and follow `docs/workflow/develop.md` once using the current request as the task; do not require the user to type `/develop` first. Discussion and review requests retain their original intent. `/develop <requirement>` is a thin native entry to the same shared source. See `docs/workflow/README.md` for installation in a real code repository.
 
 This is a separate candidate workflow. The seven-stage isolation and variable rules below govern the original templates when editing or explicitly using them; they do not force every Stage 3 task through seven prompts. Preserve frozen Stage 2 assets and historical conclusions. Do not load HANDOFF or architecture history for ordinary development unless the task needs them. No real product-code pilot has been completed yet; see `docs/workflow/pilot-001.md`.
 

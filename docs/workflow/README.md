@@ -1,31 +1,33 @@
 # 第三阶段：最小研发入口
 
-状态：入口 v0 已实现，尚未完成 Claude Code 实际调用与真实代码试点；效率收益未验证。项目第三阶段与第二阶段内部 Phase 3 无关。
+状态：Codex 自然语言入口和 Claude Code 命令入口均已接入同一规则源。当前环境使用 Codex，Claude Code 暂不可用；Claude 命令实跑、真实业务试点与效率收益均未验证。项目第三阶段与第二阶段内部 Phase 3 无关。
 
 ## 启动
 
-在 using-AI 仓库目录启动 Claude Code，输入：
+**Codex CLI**：在 using-AI 仓库目录启动 Codex，直接输入自然语言需求即可。项目 [AGENTS.md](../../AGENTS.md) 指引读取 [通用规则 develop.md](develop.md)，不使用 Claude 的 `/develop`。新会话会获取项目指引；已有会话可显式要求“按 docs/workflow/develop.md 执行以下需求”。
+
+**Claude Code**：在 using-AI 仓库目录启动 Claude Code，输入：
 
 ```text
 /develop 你的实际开发需求，可附范围和验收标准
 ```
 
-也可以直接用自然语言提出开发需求；本仓库的 CLAUDE.md 会指引 Claude Code 按同一份命令文件执行。无参数且没有当前任务时只询问需求，不自动修改仓库。无需填写原模板变量或手选七个阶段。
+也可以直接用自然语言提出开发需求；本仓库的 CLAUDE.md 指引读取同一份通用规则。无参数且没有当前任务时只询问需求，不自动修改仓库。无需填写原模板变量或手选七个阶段。
 
-入口采用原生项目级 custom slash command：[.claude/commands/develop.md](../../.claude/commands/develop.md)。不安装依赖、不启动子 Agent、不创建常驻服务。命令文件是流程的唯一维护点，CLAUDE.md 只保留分流指引。
+Claude 入口保留原生项目级 custom slash command：[.claude/commands/develop.md](../../.claude/commands/develop.md)，只传递任务并引用通用文件。`docs/workflow/develop.md` 是行为规则的主要维护源；AGENTS.md / CLAUDE.md 只负责接入。不安装依赖、不启动子 Agent、不创建常驻服务。
 
 ## 用在实际代码仓库
 
-1. 将上述命令文件复制到目标项目的 `.claude/commands/develop.md`（已有同名文件时先比较，不覆盖），然后在目标项目目录重新启动 Claude Code，使用 `/develop 实际需求`。
-2. 需要支持直接自然语言时，在目标项目 CLAUDE.md 中追加下面的指引；保留该项目原有规则。只复制命令文件就可用 `/develop`，无需复制 using-AI 的 CLAUDE.md、HANDOFF 或架构历史。
+1. 将通用文件复制到目标项目的 `docs/workflow/develop.md`；已有同名文件先比较，不覆盖。目标项目决定实际业务规范、测试命令和提交授权。
+2. **Codex**：在目标项目 `AGENTS.md` 中追加下面的接入指引，保留原有规则，然后在该项目目录启动新 Codex 会话，直接描述需求。不要复制整个 using-AI 的 AGENTS.md。
+3. **Claude Code**：另复制 `.claude/commands/develop.md`，保留相同相对目录，重启后使用 `/develop 实际需求`。需要自然语言入口时，将下面的指引追加到目标项目 CLAUDE.md。不要复制整个 using-AI 的 CLAUDE.md、HANDOFF 或架构历史。
 
 ```text
-当用户提出开发需求时，读取 .claude/commands/develop.md 并按其流程执行；
-以当前需求替代 $ARGUMENTS，不要求用户先输入 /develop。
+当用户提出开发需求时，读取并遵循 docs/workflow/develop.md，以当前需求为任务。
 遵守本项目既有规格和权限；说明、讨论、审查请求按原意处理，不自动进入实现。
 ```
 
-安装仅需复制一份文件。目标项目决定实际业务规则、测试命令与提交授权。命令发现及行为仍需在用户的 Claude Code 版本中实测；当前会话由 Codex 实现文件，不能当作 Claude Code 调用成功。
+Codex 安装是一份通用文件加一段 AGENTS.md 指引；Claude 命令安装是通用文件加命令文件。AGENTS.md 是 Codex 项目指引入口，引用的通用文件由 Agent 按指令读取，并非 Codex 自动导入任意 Markdown。本次在已有 Codex 会话中读取并应用通用规则完成入口维护，未启动新会话验证自动发现，也不能当作 Claude Code 调用成功。官方支持方式参见 [OpenAI AGENTS.md 指南](https://developers.openai.com/codex/guides/agents-md/)；本次联网读取该页面受重定向 / 403 限制，未将未读取的页面作为实测证据，入口依据当前会话实际提供的 AGENTS.md 指引。
 
 ## 从需求到交付
 
@@ -33,7 +35,7 @@
 
 SIMPLE 用对话中的目标和验收替代额外文档；MODERATE 增加简短方案和相关测试；COMPLEX 明确规格、边界及依赖，按项目约定分批交付；HIGH-RISK 在受影响工作前确认。发现风险可升级，资金、数据安全、权限和不可逆操作不因改动小而降级。已有业务答案不重复询问，已授权工作不反复请求开始。
 
-只读取当前任务相关规范，复用已读上下文；只有新修改、失败或新风险才重复验证。无需默认读取第二阶段 Protocol 或运行旧验证链。完整行为规则见命令文件，不在这里复制。
+只读取当前任务相关规范，复用已读上下文；只有新修改、失败或新风险才重复验证。无需默认读取第二阶段 Protocol 或运行旧验证链。完整行为规则见 [develop.md](develop.md)，不在各入口复制。
 
 ## 与既有资产的边界
 

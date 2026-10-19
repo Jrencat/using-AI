@@ -17,9 +17,9 @@
 
 ## 第三阶段：直接开始开发
 
-在本仓库目录启动 Claude Code，输入 `/develop 你的开发需求`，也可直接自然语言提出需求。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。入口文件为 [`.claude/commands/develop.md`](./.claude/commands/develop.md)。
+在本仓库目录启动 **Codex CLI，直接自然语言描述开发需求**；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
 
-在实际代码仓库使用时，只需复制命令文件；自然语言自动入口需追加一段项目指引。详见[启动与安装方法](./docs/workflow/README.md)。当前入口已实现，Claude Code 实际调用和真实代码试点待执行，成本收益尚未验证；[首次试点记录](./docs/workflow/pilot-001.md)说明阻塞与实际可测数据。以下七阶段模板保持原样，继续作为独立方案与对照基线。
+在实际代码仓库使用时，复制通用规则并追加项目指引；Claude 命令另需命令文件。详见[启动与安装方法](./docs/workflow/README.md)。当前仅 Codex 可用；Codex 新会话自动发现、Claude Code 实际调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)说明阻塞与实际可测数据。以下七阶段模板保持原样，继续作为独立方案与对照基线。
 
 ## 解决什么问题
 
