@@ -19,7 +19,7 @@
 
 在本仓库目录启动 **Codex CLI，直接自然语言描述开发需求**；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
 
-在实际代码仓库使用时，复制通用规则并追加项目指引；Claude 命令另需命令文件。详见[启动与安装方法](./docs/workflow/README.md)。当前仅 Codex 可用；Codex 新会话自动发现、Claude Code 实际调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)说明阻塞与实际可测数据。以下七阶段模板保持原样，继续作为独立方案与对照基线。
+在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。完整步骤与更新、卸载策略见[启动与安装方法](./docs/workflow/README.md)。保留旧版手工接入方式。Agent 新会话发现、实际调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)保留原有试点记录。以下七阶段模板保持原样，继续作为独立方案与对照基线。
 
 ## 解决什么问题
 
