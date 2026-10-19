@@ -11,6 +11,7 @@
 两份文件内容一一对应，只在「是否使用 slash command」上有差异，可按你的工具链任选其一。
 
 > 本仓库还包含 Agent-Native Protocol / Harness 的设计与有限范围验证。想知道现在能用什么、不能用什么：见 [`docs/architecture/ADOPTION.md`](./docs/architecture/ADOPTION.md)。
+> 项目第二阶段（Protocol / Harness 探索，含内部 Phase 1–5）的原有产品推进路线已收尾；局部工程成果保留，不代表完整研发工作流或成本收益已获证明。见[第二阶段收尾记录](./docs/architecture/stage-2-closeout.md)与[当前交接](./HANDOFF.md)。第三阶段将转向明确入口、按任务选流程及真实研发效率，以本页两套模板为对照基线。
 
 ---
 

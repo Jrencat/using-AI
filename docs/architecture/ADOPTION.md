@@ -2,6 +2,8 @@
 
 Scope: a short entry point. It states what is usable now and what is not. Normative definitions stay in `protocol.md`, `state-model.md`, `evidence.md`, `routing.md`. Phase status lives in `HANDOFF.md`.
 
+> Product direction update (2026-10-19): the Stage 2 Protocol / Harness experiment's original product route has ended; see [closeout](stage-2-closeout.md). The capabilities and limits below remain historical technical assets. The adoption sequence is not a proven low-friction end-to-end workflow. Old H2/H4 decisions in section 4 are not the default next task; Stage 3 will design a practical entry and minimum workflow, then measure it against Stage 1 templates. No new component is prescribed.
+
 ## 1. Usable today (verified within stated limits)
 
 | Capability | How to use | Evidence level |

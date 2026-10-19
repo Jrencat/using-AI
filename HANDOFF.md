@@ -2,9 +2,17 @@
 
 Read this first, then the closeout docs named below. This is a state index, not a log. Formal definitions live in `docs/architecture/`.
 
+## Current direction — 2026-10-19
+
+Project Stage 2 (Protocol / Harness experiment, internal Phase 1–5) has received a **product-direction closeout**: its original product route ends without claiming the expected usable workflow or efficiency benefits were achieved. See [Stage 2 closeout](docs/architecture/stage-2-closeout.md) and [Release draft](docs/releases/phase-2-closeout.md). This is distinct from internal Phase 2's historical PASS.
+
+Preserve all historical Phase 1–5 conclusions. Phase 4 remains not formally closed (H3); C1 is bounded PASS only. Phase 5 remains incomplete: offline adapter/mapping accepted, P5-2 INSUFFICIENT — CLOSED, P5-3/4 not authorized or started. The historical `IN PROGRESS` labels and §I below record the prior route, not current instructions to resume it. H2/H4 remain historical unresolved decisions, not the default next step.
+
+**Next work: Project Stage 3 architecture and a minimum usable development workflow**, beginning with a Claude Code entry prompt and a real task; compare total Token, human effort and quality against the original templates. Reuse technical assets only as needed. Do not default to more validators, Phase 4/5 runs or new infrastructure. When GPT-6 / Codex CLI is unavailable, prioritize work Claude Code can complete. Frozen Protocol and locked Contracts/Corpora/mappings remain frozen; record any proposed conflict and decision needed before changing them.
+
 ## A. Project
 
-**using-AI** = a Model-Agnostic / Agent-Native Software Engineering Protocol / Harness. It is not a CLI, SDK, MCP server or agent framework.
+**using-AI** holds Stage 1 prompt templates and the Stage 2 Model-Agnostic / Agent-Native Protocol / Harness experiment. Stage 3 now targets practical development efficiency (see Current direction). No CLI, SDK, MCP server or agent framework is prescribed for Stage 3.
 
 ```text
 Protocol = what must be true (objects, states, invariants, evidence, human authority)
@@ -25,6 +33,8 @@ The repo also holds the legacy 7-stage Chinese prompt templates (see `CLAUDE.md`
 - **Protocol is FROZEN** (`protocol.md`, `state-model.md` unchanged through Phase 3). Change only with a proven contradiction that Harness/Runtime cannot solve.
 
 ## C. Phase status
+
+Historical internal Phase statuses at product closeout follow; they are not Stage 3 milestones or authorization to continue the old route.
 
 ```text
 Phase 1: PASS / CLOSED   (1A COMPLETE | 1B COMPLETE | 1C PASS WITH GAPS, Protocol frozen | 1D INSUFFICIENT — CLOSED;
@@ -166,6 +176,8 @@ Governing Spec Resolver; async/queryable Human Gate and Assumption promotion; Ev
 
 ## H. Git notes
 
+- Product-closeout baseline (2026-10-19): `main` HEAD `3c84e5b18d5fcdedda8c893ff2f6e3bf643229a0`, equal to `origin/main` after fetch. Only pre-existing untracked `.claude/` was present; leave it out of the closeout commit. Current HEAD must be read from Git; notes below are historical snapshots.
+
 - Branch `main`, remote `origin` (github.com/Jrencat/using-AI). (Update: later HEAD `105e56d`, `docs(handoff): record Phase 5 closeout and human rulings`, equals `origin/main` as verified by `git rev-parse` before the ADOPTION commit; the `bf52238` text below is the historical note it replaced.) Historical baseline (as written then): local `main` HEAD = `bf52238` (`docs(phase-5): close P5-2 as insufficient`), working tree clean when this was written; remote sync was NOT re-verified for `bf52238` (last `git fetch` check, 2026-10-09, was at `4f3a2d8`, when all Phase 4 files were on GitHub). Checkpoint chain (summary only; `…` marks omitted intermediate commits, not the complete history): `91c5c59` (close phase 3) → `9ca8ffe` (phase 4 C1 live run) → `6520554` (.gitattributes) → `36d5462` (HANDOFF) → `89f9fb8` (HANDOFF sync) → `a1e1f5c` (test resource warnings) → `4f3a2d8` (`docs/ai-collaboration/`) → … → `4c65d10` (phase 4 bounded C1 gate closeout) → `7e64b04` (offline Codex receipt adapter) → `99dd307` (HANDOFF git notes) → `29d961e` (P5-1.1 mapping v2) → `bf52238` (P5-2 closed as insufficient). Run `git log -1` for the current HEAD.
 - `CLAUDE.md` (one added line pointing at `docs/architecture/` in `9ca8ffe`; one more line registering `docs/ai-collaboration/` in `4f3a2d8`) and `AGENTS.md` (repo guidelines; content describes the template deliverable and is partly outdated for the Phase 4 Python tools) were pre-existing user workspace files; the Human's instruction for the Phase 4 C1 checkpoint asked to inspect and include project-related ones, so both are included in it. Do not revert them without the user's say-so.
 - Phase 4 C1 checkpoint (`9ca8ffe`, `checkpoint: record phase 4 C1 live run`): saves Contract/Corpus v1–v3 + records, boundary/proof-design docs, `phase-4-validation/` tools, tests, Fixture, `corpus-run-results-v3.json`, `CLAUDE.md`, `AGENTS.md`, this HANDOFF. Excluded: `phase-4-validation/__pycache__/` (untracked bytecode, left on disk; a .gitignore entry was added later, see limit 9), Live Run artifacts (outside repo in `D:\c1-live\`; package in gitignored `harness/runs/`).
@@ -173,7 +185,9 @@ Governing Spec Resolver; async/queryable Human Gate and Assumption promotion; Ev
 - Phase 3 files (`docs/architecture/phase-3/`, `phase-3-validation/`) and the Phase 3 HANDOFF update are committed in `91c5c59`.
 - `docs/architecture/phase-4/` and `phase-4-validation/` were untracked until the Phase 4 C1 checkpoint above (the Contract never being in git earlier is why the historical v1/v2 Contract hashes cannot be re-verified).- Never `git add .` / `-A`; never force-push. Global rules in the user's CLAUDE.md apply (concise output, no project-wide formatting, no push/force/`--no-verify` unless asked).
 
-## I. NEXT STEP
+## I. Historical next-step record (superseded by Current direction)
+
+Retained for provenance of H1/H3 rulings, pending H2/H4 and technical limits. References below to "next step" / "Until then" belong to the old Phase 4/5 route. Current work is Stage 3 architecture and the minimum usable workflow; no historical pending item authorizes further runs or tools.
 
 ```text
 Phase 4 C1: Contract and Corpus v3 approved (Gate ③); tools 143/143; Fixture + anchor_tool built;
