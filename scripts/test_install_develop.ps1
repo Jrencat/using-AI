@@ -6,21 +6,36 @@ $sandbox = Join-Path ([IO.Path]::GetTempPath()) ('using-ai-install-test-' + [gui
 $savedCodexHome = $env:CODEX_HOME
 $savedClaudeConfig = $env:CLAUDE_CONFIG_DIR
 $env:CLAUDE_CONFIG_DIR = $null
-$fixtureState = @{ revision = 'a' * 40; networkFailure = $false; incomplete = $false; requests = 0; passed = 0 }
+$fixtureState = @{ revision = 'a' * 40; networkFailure = $false; incomplete = $false; requests = 0; passed = 0; failureStage = ''; urls = @(); invalid = $false }
 $passed = 0
 
 
 function Invoke-RestMethod {
     param($Uri, $Headers, $TimeoutSec)
     $fixtureState.requests++
+    $fixtureState.urls += $Uri
+    if ($fixtureState.failureStage -eq 'API') { Throw-HttpFailure }
     if ($fixtureState.networkFailure) { throw 'Simulated network failure' }
     return @{ sha = $fixtureState.revision }
 }
 function Invoke-WebRequest {
     param([switch]$UseBasicParsing, $Uri, $OutFile, $TimeoutSec)
+    $fixtureState.urls += $Uri
+    if ($fixtureState.failureStage -eq 'Raw') { Throw-HttpFailure }
     $relative = ($Uri -split '/skills/develop/', 2)[1]
+    if ($fixtureState.invalid -eq $relative) { Set-Content -LiteralPath $OutFile -Value '<html>proxy login</html>'; return }
+    if ($fixtureState.failureStage -eq 'transport') { throw [Net.WebException]::new('Proxy authentication fixture-secret', [Net.WebExceptionStatus]::ProxyNameResolutionFailure) }
     if ($fixtureState.incomplete -and $relative -eq 'LICENSE') { return }
     Copy-Item -LiteralPath (Join-Path $package $relative) -Destination $OutFile
+}
+function Throw-HttpFailure {
+    $exception = [Exception]::new('Do not expose Authorization: Bearer fixture-secret')
+    $exception | Add-Member -NotePropertyName Response -NotePropertyValue ([pscustomobject]@{
+        StatusCode = 403; Headers = @{ 'X-RateLimit-Remaining' = '0'; 'X-RateLimit-Reset' = '1234567890'; 'Authorization' = 'fixture-secret' }
+    })
+    $record = [Management.Automation.ErrorRecord]::new($exception, 'Http403', [Management.Automation.ErrorCategory]::InvalidOperation, $null)
+    $record.ErrorDetails = [Management.Automation.ErrorDetails]::new('{"message":"API rate limit exceeded; fixture-secret"}')
+    throw $record
 }
 function Assert($Condition, [string]$Message) {
     if (!$Condition) { throw "Assertion failed: $Message" }
@@ -62,12 +77,65 @@ try {
     $passed++
 
     $fixtureState.networkFailure = $true
-    Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'GitHub download failed'
+    Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'API ref resolution failed; HTTP unavailable'
     $fixtureState.networkFailure = $false
     Assert (Test-Path -LiteralPath (Join-Path $target 'SKILL.md')) 'Download failure preserves install'
     $fixtureState.incomplete = $true
     Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Incomplete package'
     $fixtureState.incomplete = $false
+
+    $before = @{}
+    foreach ($file in @('SKILL.md', 'references/develop.md', 'LICENSE', '.using-ai-install.json')) {
+        $before[$file] = (Get-FileHash -LiteralPath (Join-Path $target $file)).Hash
+    }
+    foreach ($failureStage in @('API', 'Raw')) {
+        $fixtureState.failureStage = $failureStage
+        $message = ''
+        try { & $installer -Update -Target codex -Ref 'release/test' -UserDirectory $testUser | Out-Null } catch { $message = $_.Exception.Message }
+        Assert ($message.Contains('HTTP 403')) 'HTTP status reported'
+        $expectedUrl = if ($failureStage -eq 'API') { 'https://api.github.com/repos/Jrencat/using-AI/commits/release%2Ftest' } else { "https://raw.githubusercontent.com/Jrencat/using-AI/$($fixtureState.revision)/skills/develop/SKILL.md" }
+        Assert ($message.Contains($expectedUrl)) 'Failing URL reported'
+        Assert ($message.Contains('X-RateLimit-Remaining=0')) 'Rate limit reported'
+        Assert (!$message.Contains('fixture-secret')) 'Response and exception secrets not exposed'
+        $passed++
+    }
+    $fixtureState.failureStage = ''
+    foreach ($invalidFile in @('SKILL.md', 'references/develop.md', 'LICENSE')) {
+        $fixtureState.invalid = $invalidFile
+        Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Package validation failed'
+    }
+    $fixtureState.invalid = $false
+    $fixtureState.failureStage = 'transport'
+    Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Raw file download (SKILL.md) failed; HTTP unavailable'
+    $fixtureState.failureStage = ''
+    $savedRevision = $fixtureState.revision
+    $fixtureState.revision = 'invalid-api-content'
+    Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'API ref resolution returned invalid content'
+    $fixtureState.revision = $savedRevision
+    foreach ($file in $before.Keys) { Assert ((Get-FileHash -LiteralPath (Join-Path $target $file)).Hash -eq $before[$file]) 'Failed updates preserve all installed bytes' }
+    foreach ($refName in @('release/test', 'v1.0', 'abcdef0')) {
+        $fixtureState.urls = @()
+        & $installer -Update -Target codex -Ref $refName -UserDirectory $testUser | Out-Null
+        Assert ($fixtureState.urls[0] -eq "https://api.github.com/repos/Jrencat/using-AI/commits/$([Uri]::EscapeDataString($refName))") 'Non-SHA ref resolved by API'
+        Assert ($fixtureState.urls[1].Contains("/$($fixtureState.revision)/skills/develop/")) 'Raw uses resolved commit'
+        $passed++
+    }
+    $fixtureState.networkFailure = $true
+    $fixtureState.urls = @()
+    $pinned = 'A281393E9F024B7FC72AAD9AC80ABC8327EAAB78'
+    & $installer -Update -Target codex -Ref $pinned -UserDirectory $testUser | Out-Null
+    Assert ($fixtureState.urls.Count -eq 3) 'Full SHA bypasses API'
+    foreach ($url in $fixtureState.urls) { Assert ($url.Contains("/$($pinned.ToLowerInvariant())/skills/develop/")) 'Pinned raw URL' }
+    Assert ((Get-Content -LiteralPath (Join-Path $target '.using-ai-install.json') -Raw | ConvertFrom-Json).commit -eq $pinned.ToLowerInvariant()) 'Pinned commit recorded'
+    $fixtureState.networkFailure = $false
+    $passed++
+    $freshUser = Join-Path $sandbox 'failed-fresh-install'
+    New-Item -ItemType Directory -Path $freshUser | Out-Null
+    $fixtureState.failureStage = 'Raw'
+    Expect-Failure { & $installer -Target codex -Ref $pinned -UserDirectory $freshUser } 'Raw file download (SKILL.md) failed; HTTP 403'
+    Assert (!(Test-Path -LiteralPath (Join-Path $freshUser '.agents/skills/develop'))) 'Failed fresh install never published'
+    Assert (@(Get-ChildItem -LiteralPath (Join-Path $freshUser '.agents') -Filter 'using-ai-stage-*').Count -eq 0) 'Failed fresh staging cleaned'
+    $fixtureState.failureStage = ''
 
     Add-Content -LiteralPath (Join-Path $target 'SKILL.md') -Value 'Custom content'
     Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Local changes detected'

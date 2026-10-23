@@ -17,6 +17,31 @@ $stage = $null
 $lock = $null
 $lockPath = $null
 
+function Stop-GitHubRequest([string]$Phase, [string]$Url, $Failure) {
+    $status = 'unavailable (network/proxy/TLS/timeout; no HTTP response)'
+    $details = @()
+    $response = $Failure.Exception.Response
+    if ($response) {
+        if ($null -ne $response.StatusCode) { $status = [string][int]$response.StatusCode }
+        # Allowlist numeric diagnostics only; never print arbitrary headers or exception text.
+        foreach ($name in @('X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'Retry-After')) {
+            $value = [string]($response.Headers[$name] -join ',')
+            if ($value -match '^\d{1,20}$') { $details += "$name=$value" }
+        }
+    }
+    # GitHub JSON messages may contain user input. Report only recognized categories.
+    if ($Failure.ErrorDetails.Message) {
+        try {
+            $body = $Failure.ErrorDetails.Message | ConvertFrom-Json
+            if ($body.message -match 'rate limit') { $details += 'GitHub response: rate limit exceeded' }
+            elseif ($body.message -match '^Not Found$') { $details += 'GitHub response: not found' }
+            elseif ($body.message -match '^Bad credentials$') { $details += 'GitHub response: bad credentials' }
+            elseif ($body.message -match 'access blocked') { $details += 'GitHub response: access blocked' }
+        } catch { } # Non-JSON proxy responses are deliberately omitted.
+    }
+    throw "$Phase failed; HTTP $status; URL: $Url. $($details -join '; '). Check the selected -Ref and network/proxy policy. Existing Skill is unchanged."
+}
+
 function Assert-PlainDirectory([string]$Path) {
     $item = Get-Item -LiteralPath $Path -Force
     if (!$item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
@@ -65,8 +90,18 @@ function Assert-Package([string]$Path) {
         }
     }
     $entry = Get-Content -LiteralPath (Join-Path $Path 'SKILL.md') -Raw -Encoding UTF8
-    if ($entry -notmatch '(?m)^name: develop\s*$' -or $entry -notmatch '\]\(references/develop\.md\)') {
+    if ($entry -notmatch '\A---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)' -or
+        $entry -notmatch '(?m)^name: develop\s*$' -or $entry -notmatch '\]\(references/develop\.md\)') {
         throw 'Invalid SKILL.md: expected develop metadata and a local references/develop.md link.'
+    }
+    $rules = Get-Content -LiteralPath (Join-Path $Path 'references/develop.md') -Raw -Encoding UTF8
+    if ($rules -notmatch '(?m)^# \u901a\u7528\u7814\u53d1\u5de5\u4f5c\u6d41\s*$' -or
+        $rules -notmatch '(?m)^## \u4ea4\u4ed8\s*$') {
+        throw 'Invalid references/develop.md: expected workflow title and delivery section.'
+    }
+    $license = Get-Content -LiteralPath (Join-Path $Path 'LICENSE') -Raw -Encoding UTF8
+    if ($license -notmatch '\AMIT License\r?\n' -or $license -notmatch 'THE SOFTWARE IS PROVIDED "AS IS"') {
+        throw 'Invalid LICENSE: expected the MIT license.'
     }
 }
 
@@ -151,18 +186,27 @@ try {
             }
         }
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-        $encodedRef = [Uri]::EscapeDataString($Ref)
-        try {
-            $commit = (Invoke-RestMethod -Uri "https://api.github.com/repos/Jrencat/using-AI/commits/$encodedRef" -Headers @{ 'User-Agent' = 'using-ai-installer' } -TimeoutSec 30).sha
-            if ($commit -notmatch '^[a-f0-9]{40}$') { throw 'Invalid GitHub commit response.' }
-            $stage = Join-Path $agents ('using-ai-stage-' + [guid]::NewGuid().ToString('N'))
-            New-Item -ItemType Directory -Path (Join-Path $stage 'references') -Force | Out-Null
-            foreach ($file in $files) {
-                Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/Jrencat/using-AI/$commit/skills/develop/$file" -OutFile (Join-Path $stage $file) -TimeoutSec 30 | Out-Null
+        if ($Ref -match '^[a-fA-F0-9]{40}$') {
+            $commit = $Ref.ToLowerInvariant()
+        }
+        else {
+            $encodedRef = [Uri]::EscapeDataString($Ref)
+            $url = "https://api.github.com/repos/Jrencat/using-AI/commits/$encodedRef"
+            try { $commit = (Invoke-RestMethod -Uri $url -Headers @{ 'User-Agent' = 'using-ai-installer' } -TimeoutSec 30).sha }
+            catch { Stop-GitHubRequest 'API ref resolution' $url $_ }
+            if ($commit -isnot [string] -or $commit -cnotmatch '^[a-f0-9]{40}$') {
+                throw "API ref resolution returned invalid content; URL: $url. Expected a full commit SHA. Existing Skill is unchanged."
             }
         }
-        catch { throw "GitHub download failed: $($_.Exception.Message). Check network/proxy, GitHub API rate limits and -Ref, then retry. Existing Skill is unchanged." }
-        Assert-Package $stage
+        $stage = Join-Path $agents ('using-ai-stage-' + [guid]::NewGuid().ToString('N'))
+        New-Item -ItemType Directory -Path (Join-Path $stage 'references') -Force | Out-Null
+        foreach ($file in $files) {
+            $url = "https://raw.githubusercontent.com/Jrencat/using-AI/$commit/skills/develop/$file"
+            try { Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile (Join-Path $stage $file) -TimeoutSec 30 | Out-Null }
+            catch { Stop-GitHubRequest "Raw file download ($file)" $url $_ }
+        }
+        try { Assert-Package $stage }
+        catch { throw "Package validation failed for commit $commit from https://raw.githubusercontent.com/Jrencat/using-AI/$commit/skills/develop/: $($_.Exception.Message) Existing Skill is unchanged." }
         $hashes = [ordered]@{}
         foreach ($file in $files) { $hashes[$file] = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash }
         @{ schema = 1; origin = $origin; commit = $commit; ref = $Ref; hashes = $hashes } |
