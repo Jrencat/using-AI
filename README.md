@@ -1,4 +1,63 @@
-# AI 研发流水线提示词模板（七阶段 · 风险隔离版）
+# using-AI：安装 `$develop`，在自己的项目中开始开发
+
+`$develop` 帮助 Codex 理解需求、按需多轮澄清、实现代码、执行必要验证并交付。简单需求直接执行；关键业务歧义未解决时先提问。无需了解本仓库的协议或七阶段模板。
+
+## 快速安装（Codex / Windows）
+
+先安装并配置好 Codex CLI，确保 `codex` 命令可用。在 **PowerShell 5.1 或更新版本**运行：
+
+```powershell
+& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1')))
+```
+
+无需克隆仓库、Python、Git 或管理员权限。安装器只从 GitHub 下载 `skills/develop/` 的三个必需文件，安装到当前用户的 `~/.agents/skills/develop/`，并检查文件、入口引用和哈希。不会修改 Codex 配置或项目指引；同名未知来源或被修改的 Skill 会使安装停止。此命令执行本仓库 `main` 上的脚本；团队固定版本时，将命令中的 `main` 换成已审核提交，并在末尾加 `-Ref <同一提交>`。
+
+### 开始使用
+
+在自己的项目中启动新的 Codex 会话，输入：
+
+```text
+$develop 帮我实现某项需求
+```
+
+用户级安装可供其他项目使用，无需在每个项目复制规则。项目自己的 AGENTS.md、规格和授权仍然适用。若未发现 Skill，启动新会话并检查下方常见问题；文件安装检查不等于已验证 Codex 新会话发现。
+
+### 更新
+
+```powershell
+& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1'))) -Update
+```
+
+更新只替换本安装器管理的 `develop` Skill，先检查本地文件是否被修改，再下载同一 GitHub 提交下的完整包；旧版保留在 `~/.agents/using-ai-backups/`，不参与 Skill 发现。同版本不替换，重复安装提示使用更新命令。未知来源、个人定制或新增文件不会被静默覆盖：先将整个旧目录移到 skills 扫描目录之外备份，再重新安装；按需合并定制。更新后启动新会话。
+
+### 卸载
+
+```powershell
+& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1'))) -Uninstall
+```
+
+将受管理且未修改的 Skill 移到上述备份目录，不删除配置或备份。离线或已有个人修改时，也可手动将 `~/.agents/skills/develop/` 移到 skills 扫描目录之外，再启动新会话。
+
+### 常见安装问题
+
+| 情况 | 处理方式 |
+| --- | --- |
+| 找不到 `codex` | 先完成 Codex CLI 安装，确认命令在 PATH 中，重新打开 PowerShell |
+| 下载失败、403、404、超时 | 检查 GitHub API 和 raw.githubusercontent.com 的网络 / 代理、API 限流及所选 ref；重试。首次下载脚本失败时安装器尚未运行 |
+| 同名 Skill、未知来源或本地修改 | 按报错路径将旧目录移出所有 skills 扫描目录备份，再安装；不直接覆盖 |
+| 权限不足或安装锁残留 | 检查报错目录权限；确认没有安装进程后才移除报错中的锁文件，不用管理员权限强行覆盖 |
+| 安装成功但未发现 / 仍用旧规则 | 启动新会话；检查项目级 `.agents/skills/develop`、兼容目录 `~/.codex/skills/develop` 或 `$CODEX_HOME/skills/develop` 是否有另一份；也检查 Codex 是否禁用了该 Skill |
+| macOS / Linux 或希望在 Codex 内安装 | 使用下方内置安装器请求；它需要 Python，不提供本脚本的受管理更新功能 |
+
+```text
+$skill-installer 从 https://github.com/Jrencat/using-AI/tree/main/skills/develop 安装 develop Skill
+```
+
+内置安装器可直接获取 GitHub 子目录，无需手动克隆，但目标已存在时会拒绝安装；使用它安装的副本需先移出扫描目录备份，再重新安装以更新。Claude、项目级安装、离线源码安装及维护者打包方式见[详细安装说明](./docs/workflow/README.md)。新会话发现及跨项目调用仍需在目标 Codex 环境确认，不以文件检查代替实际调用。
+
+---
+
+## 原有七阶段模板
 
 一套面向 **规格驱动开发（Spec-Driven Development）** 的中文提示词模板，把「需求 → 交付」拆成 7 个互相隔离的阶段，每个阶段都有明确的输入、输出、禁止项和人工卡点。
 

@@ -16,7 +16,13 @@
 
 Claude 入口保留原生项目级 custom slash command：[.claude/commands/develop.md](../../.claude/commands/develop.md)，只传递任务并引用通用文件。`docs/workflow/develop.md` 是行为规则的主要维护源；AGENTS.md / CLAUDE.md 只负责接入。不安装依赖、不启动子 Agent、不创建常驻服务。
 
-## 安装标准 Skill（推荐）
+## 安装标准 Skill
+
+**普通 Codex 用户**：优先使用根目录 [README 的快速安装、更新与卸载命令](../../README.md)，无需克隆或运行 Python。`scripts/install-develop.ps1` 使用系统 PowerShell 和 HTTPS，解析 GitHub ref 为提交后只下载三个 Skill 文件；校验后再安装。来源及文件哈希保存在 Skill 内的 `.using-ai-install.json`，更新 / 卸载只接受本安装器管理且未修改的目录，旧版移到 `~/.agents/using-ai-backups/`。不修改项目规则或 Codex 配置；检查兼容用户目录中的同名冲突，但不扫描每个业务项目。
+
+以下 Python 命令面向**维护者、已有源码用户或 Claude / 项目级安装**，不是普通用户的安装前置条件。PowerShell 入口与内置 skill-installer、旧 Python 安装器产生的安装不自动互相接管；迁移时先将旧目录整体备份到 skills 扫描范围外。
+
+维护分发时，先通过打包一致性检查及 `powershell -NoProfile -File scripts/test_install_develop.ps1` 的隔离安装检查，再按项目授权发布源码。README 的远程命令只有在对应 ref 已包含 `scripts/install-develop.ps1` 时才可用；本地文件修改不代表远端已发布。测试脚本只模拟网络并写隔离临时目录，不证明目标环境的联网安装或 Codex 新会话发现成功。
 
 分发目录为 `skills/develop/`，包含标准 `SKILL.md`、完整的 `references/develop.md` 和 MIT `LICENSE`。安装后不依赖 using-AI 的路径。规则仍只编辑 `docs/workflow/develop.md`，运行 `python scripts/package_develop.py` 生成分发副本；`python scripts/package_develop.py --check` 必须通过。不要直接编辑生成副本。
 
