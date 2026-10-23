@@ -22,6 +22,8 @@
 
 ### 跨平台与源码安装
 
+PowerShell 卸载也支持无 manifest 的可识别旧版：检查 `SKILL.md` 的 `develop` 名称、规则引用及规则的特征段落后，将整个目录原样移到 `using-ai-backups/` 并报告路径，保留个人文件。安装、更新不接受该识别结果；存在但无效的 manifest 不按旧版处理，链接、异常路径或未知内容拒绝移动。无法识别时请人工审阅并整体移到技能发现目录之外备份。Python 安装器没有自动卸载功能，继续采用本节的人工备份方式，不会因本次修复放宽覆盖限制。
+
 无需 PowerShell 时，可从 GitHub 逐一下载 `skills/develop/SKILL.md`、`references/develop.md`、`LICENSE`，保持相对路径，放入宿主已确认的 skills 目录；通用手动使用只需规则全文。不确定宿主机制时，提供上下文即可，不猜测其专有路径。
 
 已有源码用户可用 Python 3.9+ 标准库安装，均不要求宿主 CLI：

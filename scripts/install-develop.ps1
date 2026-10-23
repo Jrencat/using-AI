@@ -24,6 +24,39 @@ function Assert-PlainDirectory([string]$Path) {
     }
 }
 
+function Assert-UnlinkedTree([string]$Path) {
+    Assert-PlainDirectory $Path
+    foreach ($item in Get-ChildItem -LiteralPath $Path -Force) {
+        if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw "Linked content detected; left untouched: $($item.FullName)"
+        }
+        if ($item.PSIsContainer) { Assert-UnlinkedTree $item.FullName }
+    }
+}
+
+function Assert-ExistingSkill([string]$Path) {
+    # Only explicit uninstall may recognize a package without an installation record.
+    if (!$Uninstall -or (Test-Path -LiteralPath (Join-Path $Path $manifestName))) {
+        Assert-Managed $Path
+        return
+    }
+    Assert-UnlinkedTree $Path
+    $entryPath = Join-Path $Path 'SKILL.md'
+    $rulePath = Join-Path $Path 'references/develop.md'
+    $unknown = "Unknown existing Skill: $Path. Inspect it manually and move the entire directory outside skills to a backup; no files were changed."
+    if (!(Test-Path -LiteralPath $entryPath -PathType Leaf) -or !(Test-Path -LiteralPath $rulePath -PathType Leaf)) { throw $unknown }
+    $entry = Get-Content -LiteralPath $entryPath -Raw -Encoding UTF8
+    $rules = Get-Content -LiteralPath $rulePath -Raw -Encoding UTF8
+    # Escaped Chinese headings keep this script ASCII-safe for Windows PowerShell 5.1.
+    if ($entry -notmatch '\A---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)' -or
+        $entry -notmatch '(?m)^name: develop\s*$' -or
+        $entry -notmatch '\]\(references/develop\.md\)' -or
+        $rules -notmatch '(?m)^# \u901a\u7528\u7814\u53d1\u5de5\u4f5c\u6d41\s*$' -or
+        $rules -notmatch '(?m)^## \u9009\u62e9\u6d41\u7a0b\s*$' -or
+        $rules -notmatch '(?m)^## \u5b9e\u73b0\u4e0e\u5fc5\u8981\u68c0\u67e5\s*$' -or
+        $rules -notmatch '(?m)^## \u4ea4\u4ed8\s*$' -or $rules -notmatch 'using-AI') { throw $unknown }
+}
+
 function Assert-Package([string]$Path) {
     foreach ($file in $files) {
         $full = Join-Path $Path $file
@@ -39,6 +72,7 @@ function Assert-Package([string]$Path) {
 
 function Assert-Managed([string]$Path) {
     Assert-PlainDirectory $Path
+    Assert-UnlinkedTree $Path
     $items = @(Get-ChildItem -LiteralPath $Path -Recurse -Force)
     if (@($items | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count) {
         throw "Linked content detected; left untouched: $Path"
@@ -81,6 +115,12 @@ try {
     }
     $skills = Join-Path $agents $(if ($Target -eq 'manual') { 'workflows' } else { 'skills' })
     $destinationPath = Join-Path $skills 'develop'
+    # Check ancestors before creating directories or following a relocated config path.
+    $ancestor = [IO.DirectoryInfo]::new($agents)
+    while ($ancestor) {
+        if (Test-Path -LiteralPath $ancestor.FullName) { Assert-PlainDirectory $ancestor.FullName }
+        $ancestor = $ancestor.Parent
+    }
     if ($Target -eq 'claude' -and !$Uninstall -and (Test-Path -LiteralPath (Join-Path $agents 'commands/develop.md'))) {
         throw 'Existing /develop command; resolve the name conflict first.'
     }
@@ -92,7 +132,7 @@ try {
     try { $lock = [IO.File]::Open($lockPath, 'CreateNew', 'Write', 'None') }
     catch { throw "Another install may be running, or access is denied: $lockPath. If a previous process crashed, inspect and remove that lock before retrying." }
     $exists = Test-Path -LiteralPath $destinationPath
-    if ($exists) { Assert-Managed $destinationPath }
+    if ($exists) { Assert-ExistingSkill $destinationPath }
     if ($exists -and !$Update -and !$Uninstall) {
         Write-Output "Already installed: $destinationPath. Use -Update to check for a newer version."
         return
@@ -136,7 +176,7 @@ try {
     }
     $backup = $null
     if ($exists) {
-        Assert-Managed $destinationPath
+        Assert-ExistingSkill $destinationPath
         $backupRoot = Join-Path $agents 'using-ai-backups'
         if (!(Test-Path -LiteralPath $backupRoot)) { New-Item -ItemType Directory -Path $backupRoot | Out-Null }
         Assert-PlainDirectory $backupRoot
