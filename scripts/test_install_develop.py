@@ -58,6 +58,15 @@ class InstallTests(unittest.TestCase):
             self.assertEqual("Custom command", command.read_text(encoding="utf-8"))
             self.assertFalse((project / ".claude/skills/develop").exists())
 
+    def test_manual_and_unknown_target(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            install("manual", project)
+            self.assertTrue((project / ".using-ai/workflows/develop/references/develop.md").is_file())
+            with self.assertRaises(ValueError):
+                install("unknown", project)
+            self.assertFalse((project / ".agents").exists())
+
     def test_missing_project_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = Path(tmp) / "missing"

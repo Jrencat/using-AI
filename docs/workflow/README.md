@@ -1,76 +1,67 @@
-# 第三阶段：最小研发入口
+# 通用研发工作流与宿主接入
 
-状态：Codex 自然语言入口和 Claude Code 命令入口均已接入同一规则源，另提供自包含的标准 Skill 分发包。当前会话使用 Codex；本机已检测到 Claude Code，Skill 新会话调用、真实业务试点与效率收益仍未验证。项目第三阶段与第二阶段内部 Phase 3 无关。
+[develop.md](develop.md) 是开发行为规则的唯一权威源；[Skill 入口](../../skills/develop/SKILL.md) 只负责定位生成的规则副本。安装器负责获取、冲突保护和宿主路径，不定义另一套流程。模型开放，宿主按能力接入，不为每个模型维护规则。
 
-## 启动
+## 接入方式与证据边界
 
-**Codex CLI**：在 using-AI 仓库目录启动 Codex，直接输入自然语言需求即可。项目 [AGENTS.md](../../AGENTS.md) 指引读取 [通用规则 develop.md](develop.md)，不使用 Claude 的 `/develop`。新会话会获取项目指引；已有会话可显式要求“按 docs/workflow/develop.md 执行以下需求”。
+| 层次 | 含义与边界 |
+| --- | --- |
+| 协议兼容 | 不依赖 GPT、Claude、Gemini、Grok、DeepSeek、MiMo 或其他特定模型；名单开放 |
+| 手动可用 | 将规则全文作为提示词或上下文；未证明产品自动加载或完整执行 |
+| 已实现适配 | Codex Skill、Claude Code Skill 与本仓库 Claude command 已有入口 |
+| 已验证接入 | 必须有真实会话加载和关键工作流执行证据；安装模拟不属于此级别 |
+| 不支持或受限 | 缺少项目文件、命令、权限等能力时，只能完成相应部分，需用户补充真实结果 |
 
-**Claude Code**：在 using-AI 仓库目录启动 Claude Code，输入：
+当前 Codex 会话通过项目指引读取规则并用于维护，不代表新会话 Skill 自动发现。2026-10-23 尝试以临时工作目录、隔离 `CLAUDE_CONFIG_DIR`、禁用会话持久化，向 Claude Code 非交互会话提供规则全文；CLI 返回退出码 1，提示 `Not logged in /login`。为避免修改真实用户全局配置，未登录或复制凭证，因此未取得真实加载和执行证据。其他具体产品未验证；不能把模型 API 可用或能读 SKILL.md 当作开发执行能力。
 
-```text
-/develop 你的实际开发需求，可附范围和验收标准
-```
+## 安装、更新和卸载
 
-也可以直接用自然语言提出开发需求；本仓库的 CLAUDE.md 指引读取同一份通用规则。无参数且没有当前任务时只询问需求，不自动修改仓库。无需填写原模板变量或手选七个阶段。
+无需克隆的 Windows 安装、目标目录和操作命令见[首页](../../README.md)。PowerShell 默认 `-Target manual`，可选 `codex` 或 `claude`，不检测或要求任一 CLI。未知目标在写文件前被拒绝。只为所选目标安装，不自动安装所有工具。Claude 用户目录遵循 `CLAUDE_CONFIG_DIR`，Codex 兼容目录冲突检查仅用于 Codex 目标。
 
-Claude 入口保留原生项目级 custom slash command：[.claude/commands/develop.md](../../.claude/commands/develop.md)，只传递任务并引用通用文件。`docs/workflow/develop.md` 是行为规则的主要维护源；AGENTS.md / CLAUDE.md 只负责接入。不安装依赖、不启动子 Agent、不创建常驻服务。
+更新和卸载使用相同 `-Target`、`-UserDirectory` 和环境变量。安装器保存提交与逐文件哈希；未知内容、修改、新增文件或链接拒绝替换。旧内容保留在所选根下 `using-ai-backups/`。不自动接管 Python 安装器或其他工具的副本。迁移时先把整个旧目录移出发现范围备份，再安装；手动合并个人定制。下载失败不替换现有包。卸载不删除备份，不改 AGENTS.md、CLAUDE.md 或其他配置。
 
-## 安装标准 Skill
+### 跨平台与源码安装
 
-**普通 Codex 用户**：优先使用根目录 [README 的快速安装、更新与卸载命令](../../README.md)，无需克隆或运行 Python。`scripts/install-develop.ps1` 使用系统 PowerShell 和 HTTPS，解析 GitHub ref 为提交后只下载三个 Skill 文件；校验后再安装。来源及文件哈希保存在 Skill 内的 `.using-ai-install.json`，更新 / 卸载只接受本安装器管理且未修改的目录，旧版移到 `~/.agents/using-ai-backups/`。不修改项目规则或 Codex 配置；检查兼容用户目录中的同名冲突，但不扫描每个业务项目。
+无需 PowerShell 时，可从 GitHub 逐一下载 `skills/develop/SKILL.md`、`references/develop.md`、`LICENSE`，保持相对路径，放入宿主已确认的 skills 目录；通用手动使用只需规则全文。不确定宿主机制时，提供上下文即可，不猜测其专有路径。
 
-以下 Python 命令面向**维护者、已有源码用户或 Claude / 项目级安装**，不是普通用户的安装前置条件。PowerShell 入口与内置 skill-installer、旧 Python 安装器产生的安装不自动互相接管；迁移时先将旧目录整体备份到 skills 扫描范围外。
-
-维护分发时，先通过打包一致性检查及 `powershell -NoProfile -File scripts/test_install_develop.ps1` 的隔离安装检查，再按项目授权发布源码。README 的远程命令只有在对应 ref 已包含 `scripts/install-develop.ps1` 时才可用；本地文件修改不代表远端已发布。测试脚本只模拟网络并写隔离临时目录，不证明目标环境的联网安装或 Codex 新会话发现成功。
-
-分发目录为 `skills/develop/`，包含标准 `SKILL.md`、完整的 `references/develop.md` 和 MIT `LICENSE`。安装后不依赖 using-AI 的路径。规则仍只编辑 `docs/workflow/develop.md`，运行 `python scripts/package_develop.py` 生成分发副本；`python scripts/package_develop.py --check` 必须通过。不要直接编辑生成副本。
-
-| Agent | 用户级目录 | 项目级目录 | 显式调用 |
-| --- | --- | --- | --- |
-| Codex CLI | `~/.agents/skills/develop/` | `<项目>/.agents/skills/develop/` | `$develop 需求` |
-| Claude Code | `~/.claude/skills/develop/` | `<项目>/.claude/skills/develop/` | `/develop 需求` |
-
-`~` 由 Python `Path.home()` 按当前用户环境解析，不硬编码用户名、盘符。Claude 用户级目录设置了 `CLAUDE_CONFIG_DIR` 时使用该目录下的 `skills/develop/`。Codex 还兼容 `$CODEX_HOME/skills`（未设置时通常为 `~/.codex/skills`）；本地安装脚本统一选择跨 Agent 标准的 `.agents/skills`，不同时安装两份。Skill 自动匹配由 Agent 决定；显式调用更易核对。安装后启动新会话，确认 Skill 已发现。
-
-先克隆本仓库，或下载 GitHub 源码归档并解压，在 using-AI 根目录运行（需要 Python 3.9+，仅标准库）：
+已有源码用户可用 Python 3.9+ 标准库安装，均不要求宿主 CLI：
 
 ```powershell
-git clone https://github.com/Jrencat/using-AI.git
-cd using-AI
 python scripts/package_develop.py --check
-# 用户级：二选一
+python scripts/install_develop.py --agent manual --project 'D:\work\my-app'
 python scripts/install_develop.py --agent codex --user
-python scripts/install_develop.py --agent claude --user
-# 项目级：替换为已有业务仓库的实际路径
-python scripts/install_develop.py --agent codex --project 'D:\work\my-app'
 python scripts/install_develop.py --agent claude --project 'D:\work\my-app'
 ```
 
-安装器不会修改 AGENTS.md / CLAUDE.md 或安装旧 command；已有目标目录时失败且保留原内容，重复执行不会追加配置。同范围存在 `.claude/commands/develop.md` 时拒绝安装同名 Skill，先人工确认如何迁移。其他范围也不要保留同名入口，避免优先级遮蔽。本仓库保留原 command，因此不要在本仓库安装同名 Claude 项目 Skill。
+以上是可选方式，按环境选择一个。`--user` 使用当前用户主目录，`--project` 要求现有项目。manual 对应 `.using-ai/workflows/develop`，codex 对应 `.agents/skills/develop`，claude 对应 `.claude/skills/develop`；Claude 用户级支持 `CLAUDE_CONFIG_DIR`。未知宿主拒绝，不退回 Codex。Python 安装拒绝已有同名目录；更新、卸载需先将旧目录整体移出发现范围备份，再安装或保留移出状态，不提供受管理的自动更新。
 
-**复用现有安装工具**：Codex 的内置 `$skill-installer` 可安装 GitHub 子目录。向其提出“从 Jrencat/using-AI 的 skills/develop 安装 Skill”，或使用其 `install-skill-from-github.py --repo Jrencat/using-AI --path skills/develop --ref <已审核提交> --dest <目标skills父目录>`。脚本位置随安装而异，不硬编码本机路径。已检查该工具支持 `--dest` 且目标存在时拒绝覆盖；它不负责更新、卸载或 Claude 同名 command 检查。只有 Codex 环境才保证提供该工具；本地小脚本补足独立 Claude 环境和范围选择，不引入完整 CLI 或第三方依赖。
+Skill 格式和目录依据：[Claude Code Skills](https://code.claude.com/docs/en/skills)、[Codex Skills](https://developers.openai.com/codex/skills/)。这些链接是机制参考，不是本次真实会话验证证据。其他宿主只承诺手动提供规则，不宣称其支持相同格式、目录或语法。
 
-**更新**：在源码目录 `git pull --ff-only`，运行打包检查；查看新旧 Skill 差异，将目标 `develop` 目录整体移到 skills 扫描目录之外的备份位置（包括个人定制），再执行原安装命令。确认新会话能调用后，按需手工合并定制。更新失败时移走未完成的新目录，再将备份放回原处。不要强制覆盖，不自动删除备份。正式团队分发建议固定已审核的 commit；目前沿用 GitHub 源码分发，没有新增自动发布服务。
+## 本仓库入口
 
-**卸载**：确认目标绝对路径和内容后，将相应 `develop` 目录移到 skills 扫描目录之外；需要彻底删除时自行清理该备份。新会话确认已不再发现此 Skill。项目级目录如已提交，按业务仓库流程提交移除。无需清理 AGENTS.md / CLAUDE.md，因为安装器从未修改它们。源码安装中断可能留下部分目录，检查后同样先移出备份再重试。
+AGENTS.md 与 CLAUDE.md 都指向权威规则，直接描述需求即可；Claude 还保留 `.claude/commands/develop.md` 的 `/develop` 薄入口，只传递任务和引用规则。分发 Skill 在其他项目自包含，不依赖本仓库路径。command 与 Skill 是宿主历史入口差异，规则没有分叉；同范围有同名 command 时安装器拒绝新增 Skill，需人工选择迁移。本仓库因此不安装同名 Claude 项目 Skill。
 
-官方依据：[Claude Skills](https://code.claude.com/docs/en/skills) 已读取，确认标准格式、两级目录、`/skill-name` 和旧 commands 兼容性。[Codex Skills](https://developers.openai.com/codex/skills/) 本次访问受 308 / Forbidden 限制；Codex 的 `SKILL.md`、`$name`、`.agents/skills` 与兼容 `.codex/skills` 另结合当前会话的 Skill 目录和内置 skill-creator / skill-installer 指引核对，不能视为本次成功读取官方网页。
-
-验证边界：本机检测到 Codex CLI 0.163.0 与 Claude Code 2.1.293。可执行文件存在及版本输出不证明 Skill 调用成功；两种 Agent 的新会话发现、真实任务调用与真实用户级安装均待验证。仅在隔离临时目录验证安装行为，不向真实用户配置写入。真实业务试点和效率收益仍未验证。
-
-## 旧版手工接入（继续兼容）
-
-1. 将通用文件复制到目标项目的 `docs/workflow/develop.md`；已有同名文件先比较，不覆盖。目标项目决定实际业务规范、测试命令和提交授权。
-2. **Codex**：在目标项目 `AGENTS.md` 中追加下面的接入指引，保留原有规则，然后在该项目目录启动新 Codex 会话，直接描述需求。不要复制整个 using-AI 的 AGENTS.md。
-3. **Claude Code**：另复制 `.claude/commands/develop.md`，保留相同相对目录，重启后使用 `/develop 实际需求`。需要自然语言入口时，将下面的指引追加到目标项目 CLAUDE.md。不要复制整个 using-AI 的 CLAUDE.md、HANDOFF 或架构历史。
+没有原生技能的宿主可直接使用以下提示：
 
 ```text
-当用户提出开发需求时，读取并遵循 docs/workflow/develop.md，以当前需求为任务。
-遵守本项目既有规格和权限；说明、讨论、审查请求按原意处理，不自动进入实现。
+请读取我提供的通用研发规则，并按规则处理以下需求：……
+遵守目标项目既有指引、规格和权限；能力不足时明确说明，不把建议当作执行结果。
 ```
 
-旧版 Codex 接入是一份通用文件加一段 AGENTS.md 指引；Claude 命令接入是通用文件加命令文件。AGENTS.md 是 Codex 项目指引入口，引用的通用文件由 Agent 按指令读取，并非 Codex 自动导入任意 Markdown。此前在已有 Codex 会话中读取并应用通用规则完成入口维护，未启动新会话验证自动发现，也不能当作 Claude Code 调用成功。官方支持方式参见 [OpenAI AGENTS.md 指南](https://developers.openai.com/codex/guides/agents-md/)；此前联网读取该页面受重定向 / 403 限制，未将未读取的页面作为实测证据，入口依据会话实际提供的 AGENTS.md 指引。
+可把规则保存在目标项目的 `docs/workflow/develop.md`，再在宿主实际支持的项目指引中添加引用；已有文件先比较，不覆盖，也不要复制本仓库整份 AGENTS.md / CLAUDE.md。
+
+## 维护与验证
+
+规则只编辑 `docs/workflow/develop.md`，运行 `python scripts/package_develop.py` 生成分发副本和许可证；`--check` 检查逐字节一致性。入口不复制流程。不增加 Runtime、依赖或后台服务。
+
+```powershell
+python scripts/package_develop.py --check
+python scripts/test_install_develop.py -v
+powershell -NoProfile -File scripts/test_install_develop.ps1
+git diff --check
+```
+
+安装测试使用临时目录和模拟下载，验证安装、更新、卸载及冲突保护，不写真实全局配置，也不证明网络安装或真实宿主会话成功。真实业务试点与成本收益仍未验证。
 
 ## 从需求到交付
 
