@@ -46,6 +46,8 @@ Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/us
 
 下载失败时检查 GitHub API / raw 域名的网络、代理、限流与 ref；已安装内容保持不变。权限或锁问题按报错路径处理，不用管理员权限强制覆盖。安装后需重载宿主；未发现技能时检查同名项目入口或旧目录的遮蔽。
 
+旧版没有 `.using-ai-install.json` 时，安装和更新仍拒绝覆盖。明确执行 `-Uninstall` 后，若入口声明 `develop` 并引用本工作流的规则文件、且目录及内容没有链接，安装器可识别旧版并将整个目录（含个人文件）移到上述备份位置，输出实际路径。此识别用于保留内容的卸载，不是来源认证；未知目录、损坏的安装记录或链接仍拒绝处理，请人工检查后将整个目录移出技能发现范围备份。
+
 macOS / Linux 可直接提供规则全文，或从 GitHub 下载 `skills/develop/` 的 `SKILL.md`、`references/develop.md`、`LICENSE` 到已确认的宿主技能目录；存在同名目录时先备份，不覆盖。无需克隆整个仓库。跨平台源码安装、项目级安装和验证边界见[详细接入说明](docs/workflow/README.md)。
 
 ---

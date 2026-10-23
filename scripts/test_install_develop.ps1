@@ -85,6 +85,52 @@ try {
     Set-Content -LiteralPath (Join-Path $target 'SKILL.md') -Value 'Unknown origin'
     Expect-Failure { & $installer -Target codex -UserDirectory $testUser } 'Unknown existing Skill'
     Assert ((Get-Content -LiteralPath (Join-Path $target 'SKILL.md') -Raw).Trim() -eq 'Unknown origin') 'Unknown Skill preserved'
+    Expect-Failure { & $installer -Target codex -Uninstall -UserDirectory $testUser } 'Unknown existing Skill'
+
+    $legacyUser = Join-Path $sandbox 'legacy-user'
+    $legacy = Join-Path $legacyUser '.agents/skills/develop'
+    New-Item -ItemType Directory -Path (Split-Path $legacy -Parent) -Force | Out-Null
+    Copy-Item -LiteralPath $package -Destination $legacy -Recurse
+    Set-Content -LiteralPath (Join-Path $legacy 'personal.txt') -Value 'Keep legacy customization'
+    New-Item -ItemType Directory -Path (Join-Path $legacy 'personal-empty') | Out-Null
+    $legacyHash = (Get-FileHash -LiteralPath (Join-Path $legacy 'references/develop.md')).Hash
+    Expect-Failure { & $installer -Target codex -UserDirectory $legacyUser } 'Unknown existing Skill'
+    Expect-Failure { & $installer -Target codex -Update -UserDirectory $legacyUser } 'Unknown existing Skill'
+    # A present but invalid manifest must never fall back to legacy recognition.
+    Set-Content -LiteralPath (Join-Path $legacy '.using-ai-install.json') -Value '{"schema":0}'
+    Expect-Failure { & $installer -Target codex -Uninstall -UserDirectory $legacyUser } 'Unrecognized installation record'
+    Remove-Item -LiteralPath (Join-Path $legacy '.using-ai-install.json')
+    # Directory junctions work without the Windows symlink privilege.
+    $external = Join-Path $sandbox 'external'
+    New-Item -ItemType Directory -Path $external | Out-Null
+    Set-Content -LiteralPath (Join-Path $external 'keep.txt') -Value 'Untouched'
+    $junction = Join-Path $legacy 'linked'
+    New-Item -ItemType Junction -Path $junction -Target $external | Out-Null
+    try {
+        Expect-Failure { & $installer -Target codex -Uninstall -UserDirectory $legacyUser } 'Linked content detected'
+        Assert ((Get-Content -LiteralPath (Join-Path $external 'keep.txt')).Trim() -eq 'Untouched') 'Linked external data preserved'
+    }
+    finally { [IO.Directory]::Delete($junction) }
+    $messages = @(& $installer -Target codex -Uninstall -UserDirectory $legacyUser)
+    Assert (!(Test-Path -LiteralPath $legacy)) 'Legacy removed from discovery'
+    $legacyBackups = @(Get-ChildItem -LiteralPath (Join-Path $legacyUser '.agents/using-ai-backups'))
+    Assert ($legacyBackups.Count -eq 1) 'Legacy backup outside skills'
+    $legacyBackup = $legacyBackups[0].FullName
+    Assert (($messages -join "`n").Contains($legacyBackup)) 'Backup path reported'
+    Assert ((Get-Content -LiteralPath (Join-Path $legacyBackup 'personal.txt')).Trim() -eq 'Keep legacy customization') 'Legacy personal file preserved'
+    Assert (Test-Path -LiteralPath (Join-Path $legacyBackup 'personal-empty') -PathType Container) 'Legacy empty directory preserved'
+    Assert ((Get-FileHash -LiteralPath (Join-Path $legacyBackup 'references/develop.md')).Hash -eq $legacyHash) 'Legacy rules preserved byte for byte'
+    $passed++
+    New-Item -ItemType Junction -Path $legacy -Target $external | Out-Null
+    try { Expect-Failure { & $installer -Target codex -Uninstall -UserDirectory $legacyUser } 'Not a plain directory' }
+    finally { [IO.Directory]::Delete($legacy) }
+    $linkedUser = Join-Path $sandbox 'linked-user'
+    New-Item -ItemType Directory -Path $linkedUser | Out-Null
+    $linkedAgents = Join-Path $linkedUser '.agents'
+    New-Item -ItemType Junction -Path $linkedAgents -Target $external | Out-Null
+    try { Expect-Failure { & $installer -Target codex -Uninstall -UserDirectory $linkedUser } 'Not a plain directory' }
+    finally { [IO.Directory]::Delete($linkedAgents) }
+    Assert (!(Test-Path -LiteralPath (Join-Path $external 'skills'))) 'Linked ancestor never written'
 
     foreach ($hostTarget in @('manual', 'claude')) {
         $hostUser = Join-Path $sandbox $hostTarget
