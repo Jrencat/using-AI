@@ -1,59 +1,52 @@
-# using-AI：安装 `$develop`，在自己的项目中开始开发
+# using-AI：面向多种 AI 的通用研发工作流
 
-`$develop` 帮助 Codex 理解需求、按需多轮澄清、实现代码、执行必要验证并交付。简单需求直接执行；关键业务歧义未解决时先提问。无需了解本仓库的协议或七阶段模板。
+帮助 AI 从需求澄清、关键决策确认到代码实现、必要验证和交付，减少未确认假设进入代码。简单任务直接执行，有重要歧义时多轮澄清。无需理解历史协议或七阶段模板。
 
-## 快速安装（Codex / Windows）
+using-AI 不是 Codex 插件或 Claude 专用 Skill。GPT、Claude、Gemini、Grok、DeepSeek、MiMo 等是模型系列；Codex CLI、Claude Code、IDE、桌面助手等是宿主。模型名单开放，不设置厂商白名单。能否操作本地项目取决于宿主的工具、权限和执行环境，模型 API 可调用并不代表可以执行开发任务。
 
-先安装并配置好 Codex CLI，确保 `codex` 命令可用。在 **PowerShell 5.1 或更新版本**运行：
+## 选择使用方式
 
-```powershell
-& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1')))
-```
+| 环境 | 接入与调用 | 当前证据 |
+| --- | --- | --- |
+| 任意 AI 助手 | 提供[通用规则](docs/workflow/develop.md)全文作为提示词或项目上下文，再附需求 | 手动可用；具体产品未逐一验证 |
+| Codex CLI | 安装目标 `codex`，新会话中 `$develop 需求` | 已实现适配；当前会话按项目指引执行过规则，新会话 Skill 发现未验证 |
+| Claude Code | 安装目标 `claude`，新会话中 `/develop 需求` | 已实现适配；隔离安装检查通过，真实会话验证见详细说明 |
+| 其他编码宿主 | 先用手动上下文；确认其技能机制后可手动复制 Skill 包 | 未验证原生接入，不猜测目录或命令 |
 
-无需克隆仓库、Python、Git 或管理员权限。安装器只从 GitHub 下载 `skills/develop/` 的三个必需文件，安装到当前用户的 `~/.agents/skills/develop/`，并检查文件、入口引用和哈希。不会修改 Codex 配置或项目指引；同名未知来源或被修改的 Skill 会使安装停止。此命令执行本仓库 `main` 上的脚本；团队固定版本时，将命令中的 `main` 换成已审核提交，并在末尾加 `-Ref <同一提交>`。
+协议兼容表示规则不依赖模型；手动可用表示可以提供上下文；已实现适配表示入口存在；已验证接入需要真实加载和执行证据。宿主缺少文件或命令能力时受限，可由用户提供文件和执行结果，但 AI 必须区分建议与实际执行。
 
-### 开始使用
+## 无需克隆的安装与使用
 
-在自己的项目中启动新的 Codex 会话，输入：
+最简单的使用方式：直接打开[通用规则](docs/workflow/develop.md)，复制全文给 AI，并说“按这些规则处理以下需求：……”。这不配置自动加载。
 
-```text
-$develop 帮我实现某项需求
-```
-
-用户级安装可供其他项目使用，无需在每个项目复制规则。项目自己的 AGENTS.md、规格和授权仍然适用。若未发现 Skill，启动新会话并检查下方常见问题；文件安装检查不等于已验证 Codex 新会话发现。
-
-### 更新
+Windows PowerShell 5.1+ 可下载安装脚本，先审阅再执行，不要求安装 Codex、Python 或 Git：
 
 ```powershell
-& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1'))) -Update
+Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1
+# 选择一个目标：manual（默认）、codex、claude
+.\install-develop.ps1 -Target manual
 ```
 
-更新只替换本安装器管理的 `develop` Skill，先检查本地文件是否被修改，再下载同一 GitHub 提交下的完整包；旧版保留在 `~/.agents/using-ai-backups/`，不参与 Skill 发现。同版本不替换，重复安装提示使用更新命令。未知来源、个人定制或新增文件不会被静默覆盖：先将整个旧目录移到 skills 扫描目录之外备份，再重新安装；按需合并定制。更新后启动新会话。
+| 目标 | 默认用户目录 | 用途 |
+| --- | --- | --- |
+| `manual` | `~/.using-ai/workflows/develop/` | 将 `references/develop.md` 提供给任意 AI，无自动发现 |
+| `codex` | `~/.agents/skills/develop/` | Codex Skill |
+| `claude` | `~/.claude/skills/develop/` | Claude Code Skill；遵循 `CLAUDE_CONFIG_DIR` |
 
-### 卸载
+团队分发应把下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核提交。安装器从该提交下载三个文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target <目标>`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
+
+### 更新、卸载与冲突
 
 ```powershell
-& ([scriptblock]::Create((Invoke-RestMethod 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1'))) -Uninstall
+.\install-develop.ps1 -Target manual -Update
+.\install-develop.ps1 -Target manual -Uninstall
 ```
 
-将受管理且未修改的 Skill 移到上述备份目录，不删除配置或备份。离线或已有个人修改时，也可手动将 `~/.agents/skills/develop/` 移到 skills 扫描目录之外，再启动新会话。
+始终选择原目标及相同用户目录 / 环境。更新、卸载只接受安装器记录且哈希未变的文件；旧目录移到该目标根目录的 `using-ai-backups/`，不删除备份。未知来源、个人修改、新增文件或链接会阻止操作；先将旧目录整体移出发现范围备份，审阅后再安装。同名 Claude command 会阻止安装和更新，但不阻止卸载受管理 Skill，command 始终保留。不会修改项目指引或无关配置。未知目标直接拒绝，可选择 `manual`，不冒充原生支持。
 
-### 常见安装问题
+下载失败时检查 GitHub API / raw 域名的网络、代理、限流与 ref；已安装内容保持不变。权限或锁问题按报错路径处理，不用管理员权限强制覆盖。安装后需重载宿主；未发现技能时检查同名项目入口或旧目录的遮蔽。
 
-| 情况 | 处理方式 |
-| --- | --- |
-| 找不到 `codex` | 先完成 Codex CLI 安装，确认命令在 PATH 中，重新打开 PowerShell |
-| 下载失败、403、404、超时 | 检查 GitHub API 和 raw.githubusercontent.com 的网络 / 代理、API 限流及所选 ref；重试。首次下载脚本失败时安装器尚未运行 |
-| 同名 Skill、未知来源或本地修改 | 按报错路径将旧目录移出所有 skills 扫描目录备份，再安装；不直接覆盖 |
-| 权限不足或安装锁残留 | 检查报错目录权限；确认没有安装进程后才移除报错中的锁文件，不用管理员权限强行覆盖 |
-| 安装成功但未发现 / 仍用旧规则 | 启动新会话；检查项目级 `.agents/skills/develop`、兼容目录 `~/.codex/skills/develop` 或 `$CODEX_HOME/skills/develop` 是否有另一份；也检查 Codex 是否禁用了该 Skill |
-| macOS / Linux 或希望在 Codex 内安装 | 使用下方内置安装器请求；它需要 Python，不提供本脚本的受管理更新功能 |
-
-```text
-$skill-installer 从 https://github.com/Jrencat/using-AI/tree/main/skills/develop 安装 develop Skill
-```
-
-内置安装器可直接获取 GitHub 子目录，无需手动克隆，但目标已存在时会拒绝安装；使用它安装的副本需先移出扫描目录备份，再重新安装以更新。Claude、项目级安装、离线源码安装及维护者打包方式见[详细安装说明](./docs/workflow/README.md)。新会话发现及跨项目调用仍需在目标 Codex 环境确认，不以文件检查代替实际调用。
+macOS / Linux 可直接提供规则全文，或从 GitHub 下载 `skills/develop/` 的 `SKILL.md`、`references/develop.md`、`LICENSE` 到已确认的宿主技能目录；存在同名目录时先备份，不覆盖。无需克隆整个仓库。跨平台源码安装、项目级安装和验证边界见[详细接入说明](docs/workflow/README.md)。
 
 ---
 
@@ -76,7 +69,7 @@ $skill-installer 从 https://github.com/Jrencat/using-AI/tree/main/skills/develo
 
 ## 第三阶段：直接开始开发
 
-在本仓库目录启动 **Codex CLI，直接自然语言描述开发需求**；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
+在本仓库中可通过宿主项目指引或手动加载规则，直接自然语言描述开发需求；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
 
 在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。完整步骤与更新、卸载策略见[启动与安装方法](./docs/workflow/README.md)。保留旧版手工接入方式。Agent 新会话发现、实际调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)保留原有试点记录。以下七阶段模板保持原样，继续作为独立方案与对照基线。
 

@@ -2,7 +2,7 @@
 
 ## Stage 3 Development Entry
 
-For a natural-language request to implement or fix something, read and follow [docs/workflow/develop.md](docs/workflow/develop.md) once using the current request as the task. This is the shared workflow source for Codex and Claude Code; Codex does not need or invoke Claude's `/develop` command. Discussion and review requests retain their original intent. Follow user instructions and applicable repository constraints; do not reload unchanged rules each turn.
+For a natural-language request to implement or fix something, read and follow [docs/workflow/develop.md](docs/workflow/develop.md) once using the current request as the task. This is the model-independent workflow source; host discovery and commands are adapters, not protocol requirements. Discussion and review requests retain their original intent. Follow user instructions and applicable repository constraints; do not reload unchanged rules each turn.
 
 The seven-stage structure and variable rules below govern the original templates when editing or explicitly using them, not every Stage 3 task. Preserve frozen Stage 2 assets and historical conclusions; do not resume Phase 4/5 or load architecture history for ordinary development. The real business pilot is waiting for an actual task; see `docs/workflow/pilot-001.md` only when working on that pilot.
 

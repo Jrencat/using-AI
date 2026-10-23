@@ -1,6 +1,8 @@
 # Windows PowerShell 5.1+ / PowerShell 7. No Python or Git required.
 [CmdletBinding()]
 param(
+    [ValidateSet('manual', 'codex', 'claude')]
+    [string]$Target = 'manual',
     [switch]$Update,
     [switch]$Uninstall,
     [string]$Ref = 'main',
@@ -50,6 +52,7 @@ function Assert-Managed([string]$Path) {
         throw "Unrecognized installation record; left untouched: $Path"
     }
     if (@($items | Where-Object { !$_.PSIsContainer }).Count -ne $files.Count + 1 -or
+        @($items | Where-Object { $_.PSIsContainer -and $_.FullName -ne (Join-Path $Path 'references') }).Count -ne 0 -or
         @($record.hashes.PSObject.Properties).Count -ne $files.Count) {
         throw "Local additions detected; move the Skill outside skills as a backup before reinstalling: $Path"
     }
@@ -68,9 +71,19 @@ try {
     if ([string]::IsNullOrWhiteSpace($UserDirectory)) { throw 'Cannot resolve the user directory.' }
     $userRoot = [IO.Path]::GetFullPath($UserDirectory)
     Assert-PlainDirectory $userRoot
-    $agents = Join-Path $userRoot '.agents'
-    $skills = Join-Path $agents 'skills'
-    $target = Join-Path $skills 'develop'
+    $agents = switch ($Target) {
+        'codex' { Join-Path $userRoot '.agents' }
+        'claude' {
+            if ($env:CLAUDE_CONFIG_DIR) { [IO.Path]::GetFullPath($env:CLAUDE_CONFIG_DIR) }
+            else { Join-Path $userRoot '.claude' }
+        }
+        'manual' { Join-Path $userRoot '.using-ai' }
+    }
+    $skills = Join-Path $agents $(if ($Target -eq 'manual') { 'workflows' } else { 'skills' })
+    $destinationPath = Join-Path $skills 'develop'
+    if ($Target -eq 'claude' -and !$Uninstall -and (Test-Path -LiteralPath (Join-Path $agents 'commands/develop.md'))) {
+        throw 'Existing /develop command; resolve the name conflict first.'
+    }
     foreach ($directory in @($agents, $skills)) {
         if (!(Test-Path -LiteralPath $directory)) { New-Item -ItemType Directory -Path $directory | Out-Null }
         Assert-PlainDirectory $directory
@@ -78,21 +91,22 @@ try {
     $lockPath = Join-Path $agents 'using-ai-develop.lock'
     try { $lock = [IO.File]::Open($lockPath, 'CreateNew', 'Write', 'None') }
     catch { throw "Another install may be running, or access is denied: $lockPath. If a previous process crashed, inspect and remove that lock before retrying." }
-    $exists = Test-Path -LiteralPath $target
-    if ($exists) { Assert-Managed $target }
+    $exists = Test-Path -LiteralPath $destinationPath
+    if ($exists) { Assert-Managed $destinationPath }
     if ($exists -and !$Update -and !$Uninstall) {
-        Write-Output "Already installed: $target. Use -Update to check for a newer version."
+        Write-Output "Already installed: $destinationPath. Use -Update to check for a newer version."
         return
     }
-    if (!$exists -and ($Update -or $Uninstall)) { throw "No managed installation at $target. Run without -Update/-Uninstall to install." }
+    if (!$exists -and ($Update -or $Uninstall)) { throw "No managed installation at $destinationPath. Run without -Update/-Uninstall to install." }
     if (!$Uninstall) {
-        if (!(Get-Command codex -ErrorAction SilentlyContinue)) { throw 'Codex CLI was not found. Install Codex and make codex available in PATH, then retry.' }
         # Refuse a second user-level copy that could shadow this installation.
-        $legacy = Join-Path $userRoot '.codex/skills/develop'
-        $otherPaths = @($legacy)
-        if ($env:CODEX_HOME) { $otherPaths += Join-Path $env:CODEX_HOME 'skills/develop' }
+        $otherPaths = @()
+        if ($Target -eq 'codex') {
+            $otherPaths += Join-Path $userRoot '.codex/skills/develop'
+            if ($env:CODEX_HOME) { $otherPaths += Join-Path $env:CODEX_HOME 'skills/develop' }
+        }
         foreach ($other in $otherPaths) {
-            if ([IO.Path]::GetFullPath($other) -ne $target -and (Test-Path -LiteralPath $other)) {
+            if ([IO.Path]::GetFullPath($other) -ne $destinationPath -and (Test-Path -LiteralPath $other)) {
                 throw "Another user-level develop Skill exists: $other. Back it up outside skills before installing here."
             }
         }
@@ -115,33 +129,37 @@ try {
             ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stage $manifestName) -Encoding UTF8
         Assert-Managed $stage
         if ($exists) {
-            Assert-Managed $target
-            $old = Get-Content -LiteralPath (Join-Path $target $manifestName) -Raw -Encoding UTF8 | ConvertFrom-Json
+            Assert-Managed $destinationPath
+            $old = Get-Content -LiteralPath (Join-Path $destinationPath $manifestName) -Raw -Encoding UTF8 | ConvertFrom-Json
             if ($old.commit -eq $commit) { Write-Output "Already up to date: $commit"; return }
         }
     }
     $backup = $null
     if ($exists) {
-        Assert-Managed $target
+        Assert-Managed $destinationPath
         $backupRoot = Join-Path $agents 'using-ai-backups'
         if (!(Test-Path -LiteralPath $backupRoot)) { New-Item -ItemType Directory -Path $backupRoot | Out-Null }
         Assert-PlainDirectory $backupRoot
         $backup = Join-Path $backupRoot ('develop-' + [guid]::NewGuid().ToString('N'))
-        [IO.Directory]::Move($target, $backup)
+        [IO.Directory]::Move($destinationPath, $backup)
         Write-Output "Previous Skill preserved outside discovery paths: $backup"
     }
-    if ($Uninstall) { Write-Output 'Uninstalled. Start a new Codex session; backups were retained.'; return }
+    if ($Uninstall) { Write-Output 'Uninstalled. Reload the selected host/context; backups were retained.'; return }
     try {
-        [IO.Directory]::Move($stage, $target)
+        [IO.Directory]::Move($stage, $destinationPath)
         $stage = $null
-        Assert-Managed $target
+        Assert-Managed $destinationPath
     }
     catch {
-        if ($backup -and !(Test-Path -LiteralPath $target)) { [IO.Directory]::Move($backup, $target) }
+        if ($backup -and !(Test-Path -LiteralPath $destinationPath)) { [IO.Directory]::Move($backup, $destinationPath) }
         throw
     }
-    Write-Output "Installed: $target (commit $commit)"
-    Write-Output 'Open your own project in a new Codex session, then type: $develop help me implement a requirement'
+    Write-Output "Installed: $destinationPath (commit $commit)"
+    switch ($Target) {
+        'codex' { Write-Output 'Start a new Codex session: $develop <requirement>' }
+        'claude' { Write-Output 'Start a new Claude Code session: /develop <requirement>' }
+        'manual' { Write-Output 'Provide references/develop.md to your AI as project context or prompt, together with your requirement. No automatic discovery is configured.' }
+    }
 }
 catch {
     throw "develop install failed: $($_.Exception.Message) For access errors, check directory permissions; do not run as administrator to overwrite another user's files."

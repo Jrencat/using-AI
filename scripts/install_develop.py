@@ -9,12 +9,16 @@ from package_develop import COPIES, ROOT
 
 
 def destination(agent, project):
+    if agent not in ("manual", "codex", "claude"):
+        raise ValueError(f"Unsupported host target: {agent}; use manual for generic context")
     if project is not None:
         base = project.resolve()
         if not base.is_dir():
             raise ValueError(f"Project does not exist: {base}")
     else:
         base = Path.home()
+    if agent == "manual":
+        return base / ".using-ai/workflows/develop"
     if agent == "claude":
         # Claude supports relocating its configuration directory.
         if project is None and os.environ.get("CLAUDE_CONFIG_DIR"):
@@ -29,6 +33,9 @@ def install(agent, project):
         if not copy.is_file() or original.read_bytes() != copy.read_bytes():
             raise ValueError("Stale package; run python scripts/package_develop.py first")
     target = destination(agent, project)
+    for parent in target.parents:
+        if parent.is_symlink() or (hasattr(parent, "is_junction") and parent.is_junction()):
+            raise ValueError(f"Linked destination parent; left untouched: {parent}")
     if target.exists() or target.is_symlink():
         raise ValueError(f"Destination already exists; left untouched: {target}")
     if agent == "claude":
@@ -44,7 +51,7 @@ def install(agent, project):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--agent", choices=("codex", "claude"), required=True)
+    parser.add_argument("--agent", choices=("manual", "codex", "claude"), required=True)
     scope = parser.add_mutually_exclusive_group(required=True)
     scope.add_argument("--user", action="store_true")
     scope.add_argument("--project", type=Path)
