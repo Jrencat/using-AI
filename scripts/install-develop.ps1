@@ -16,6 +16,49 @@ $manifestName = '.using-ai-install.json'
 $stage = $null
 $lock = $null
 $lockPath = $null
+$archivePath = $null
+
+function Expand-SkillArchive([string]$Archive, [string]$Destination) {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zip = [IO.Compression.ZipFile]::OpenRead($Archive)
+    try {
+        $root = $null
+        $selected = @{}
+        $seen = @{}
+        if ($zip.Entries.Count -gt 20000) { throw 'Archive has too many entries.' }
+        foreach ($entry in $zip.Entries) {
+            $name = $entry.FullName
+            # Validate every entry, but only write the three required regular files.
+            if ($name -match '\\|:|[\x00-\x1f]' -or $name.StartsWith('/') -or
+                @($name.TrimEnd('/').Split('/') | Where-Object { $_ -eq '.' -or $_ -eq '..' -or $_ -eq '' -or $_ -match '[. ]$' }).Count) {
+                throw 'Unsafe archive path.'
+            }
+            $parts = $name.Split('/')
+            if (!$root) {
+                $root = $parts[0]
+                if ($root -cnotmatch '^using-AI-.+$') { throw 'Unexpected archive root.' }
+            }
+            if ($parts[0] -cne $root -or $parts.Count -lt 2 -or $seen.ContainsKey($name)) { throw 'Unexpected or duplicate archive structure.' }
+            $seen[$name] = $true
+            $unixType = ($entry.ExternalAttributes -shr 16) -band 0xF000
+            if (($unixType -ne 0 -and $unixType -ne 0x8000 -and $unixType -ne 0x4000) -or
+                ($entry.ExternalAttributes -band 0x400)) { throw 'Linked or special archive entry.' }
+            $relative = $name.Substring($root.Length + 1)
+            if ($relative -clike 'skills/develop/*') {
+                $file = $relative.Substring('skills/develop/'.Length)
+                if ($files -ccontains $file) {
+                    if ($entry.Length -le 0 -or $entry.Length -gt 2MB -or $name.EndsWith('/') -or $unixType -eq 0x4000) { throw 'Invalid package entry size or type.' }
+                    $selected[$file] = $entry
+                }
+            }
+        }
+        foreach ($file in $files) {
+            if (!$selected.ContainsKey($file)) { throw "Incomplete package: $file" }
+            [IO.Compression.ZipFileExtensions]::ExtractToFile($selected[$file], (Join-Path $Destination $file))
+        }
+    }
+    finally { $zip.Dispose() }
+}
 
 function Stop-GitHubRequest([string]$Phase, [string]$Url, $Failure) {
     $status = 'unavailable (network/proxy/TLS/timeout; no HTTP response)'
@@ -90,8 +133,9 @@ function Assert-Package([string]$Path) {
         }
     }
     $entry = Get-Content -LiteralPath (Join-Path $Path 'SKILL.md') -Raw -Encoding UTF8
-    if ($entry -notmatch '\A---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)' -or
-        $entry -notmatch '(?m)^name: develop\s*$' -or $entry -notmatch '\]\(references/develop\.md\)') {
+    $metadata = [regex]::Match($entry, '\A---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)')
+    if (!$metadata.Success -or $metadata.Groups[1].Value -notmatch '(?m)^name: develop\s*$' -or
+        $entry -notmatch '\]\(references/develop\.md\)') {
         throw 'Invalid SKILL.md: expected develop metadata and a local references/develop.md link.'
     }
     $rules = Get-Content -LiteralPath (Join-Path $Path 'references/develop.md') -Raw -Encoding UTF8
@@ -117,7 +161,12 @@ function Assert-Managed([string]$Path) {
         throw "Unknown existing Skill: $Path. Move it outside the skills directories as a backup, then install again."
     }
     $record = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($record.origin -ne $origin -or $record.schema -ne 1 -or $record.commit -notmatch '^[a-f0-9]{40}$') {
+    $validSource = ($record.schema -eq 1 -and $record.commit -match '^[a-f0-9]{40}$') -or
+        ($record.schema -eq 2 -and $record.ref -is [string] -and ![string]::IsNullOrWhiteSpace($record.ref) -and
+         $record.source -ceq "https://codeload.github.com/Jrencat/using-AI/zip/$([Uri]::EscapeDataString($record.ref))" -and
+         $record.archiveSha256 -match '^[A-Fa-f0-9]{64}$' -and
+         ($null -eq $record.commit -or ($record.ref -match '^[A-Fa-f0-9]{40}$' -and $record.commit -ceq $record.ref.ToLowerInvariant())))
+    if ($record.origin -ne $origin -or !$validSource) {
         throw "Unrecognized installation record; left untouched: $Path"
     }
     if (@($items | Where-Object { !$_.PSIsContainer }).Count -ne $files.Count + 1 -or
@@ -186,10 +235,13 @@ try {
             }
         }
         [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        if ([string]::IsNullOrWhiteSpace($Ref) -or $Ref -match '[\x00-\x20\x7f]') { throw '-Ref must not be empty or contain whitespace/control characters.' }
+        $commit = $null
         if ($Ref -match '^[a-fA-F0-9]{40}$') {
             $commit = $Ref.ToLowerInvariant()
         }
-        else {
+        elseif ($Ref -match '^[a-fA-F0-9]{4,39}$') {
+            # Preserve short-SHA support; only this ambiguous form needs API resolution.
             $encodedRef = [Uri]::EscapeDataString($Ref)
             $url = "https://api.github.com/repos/Jrencat/using-AI/commits/$encodedRef"
             try { $commit = (Invoke-RestMethod -Uri $url -Headers @{ 'User-Agent' = 'using-ai-installer' } -TimeoutSec 30).sha }
@@ -200,22 +252,29 @@ try {
         }
         $stage = Join-Path $agents ('using-ai-stage-' + [guid]::NewGuid().ToString('N'))
         New-Item -ItemType Directory -Path (Join-Path $stage 'references') -Force | Out-Null
-        foreach ($file in $files) {
-            $url = "https://raw.githubusercontent.com/Jrencat/using-AI/$commit/skills/develop/$file"
-            try { Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile (Join-Path $stage $file) -TimeoutSec 30 | Out-Null }
-            catch { Stop-GitHubRequest "Raw file download ($file)" $url $_ }
-        }
+        $archiveRef = if ($commit) { $commit } else { $Ref }
+        $url = "https://codeload.github.com/Jrencat/using-AI/zip/$([Uri]::EscapeDataString($archiveRef))"
+        $archivePath = Join-Path $agents ('using-ai-download-' + [guid]::NewGuid().ToString('N') + '.zip')
+        try { Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $archivePath -TimeoutSec 60 -MaximumRedirection 0 | Out-Null }
+        catch { Stop-GitHubRequest 'Archive download' $url $_ }
+        try { Expand-SkillArchive $archivePath $stage }
+        catch { throw "Archive extraction failed; URL: $url. $($_.Exception.Message) Existing Skill is unchanged." }
         try { Assert-Package $stage }
-        catch { throw "Package validation failed for commit $commit from https://raw.githubusercontent.com/Jrencat/using-AI/$commit/skills/develop/: $($_.Exception.Message) Existing Skill is unchanged." }
+        catch { throw "Package validation failed; URL: $url. $($_.Exception.Message) Existing Skill is unchanged." }
         $hashes = [ordered]@{}
         foreach ($file in $files) { $hashes[$file] = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash }
-        @{ schema = 1; origin = $origin; commit = $commit; ref = $Ref; hashes = $hashes } |
+        # A mutable ref archive does not prove a commit; never infer SHA from its directory name.
+        @{ schema = 2; origin = $origin; commit = $commit; ref = $archiveRef; requestedRef = $Ref; source = $url;
+           archiveSha256 = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash; hashes = $hashes } |
             ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $stage $manifestName) -Encoding UTF8
         Assert-Managed $stage
         if ($exists) {
             Assert-Managed $destinationPath
             $old = Get-Content -LiteralPath (Join-Path $destinationPath $manifestName) -Raw -Encoding UTF8 | ConvertFrom-Json
-            if ($old.commit -eq $commit) { Write-Output "Already up to date: $commit"; return }
+            $sameFiles = @($files | Where-Object { $old.hashes.PSObject.Properties[$_].Value -ne $hashes[$_] }).Count -eq 0
+            if ($sameFiles -and $old.ref -ceq $archiveRef -and $old.schema -eq 2 -and $old.commit -eq $commit) {
+                Write-Output "Already up to date: ref $Ref (package hashes unchanged)"; return
+            }
         }
     }
     $backup = $null
@@ -238,7 +297,7 @@ try {
         if ($backup -and !(Test-Path -LiteralPath $destinationPath)) { [IO.Directory]::Move($backup, $destinationPath) }
         throw
     }
-    Write-Output "Installed: $destinationPath (commit $commit)"
+    Write-Output "Installed: $destinationPath (ref $Ref; commit $(if ($commit) { $commit } else { 'unknown; see installation record for archive source and hashes' }))"
     switch ($Target) {
         'codex' { Write-Output 'Start a new Codex session: $develop <requirement>' }
         'claude' { Write-Output 'Start a new Claude Code session: /develop <requirement>' }
@@ -249,6 +308,7 @@ catch {
     throw "develop install failed: $($_.Exception.Message) For access errors, check directory permissions; do not run as administrator to overwrite another user's files."
 }
 finally {
+    if ($archivePath -and (Test-Path -LiteralPath $archivePath)) { Remove-Item -LiteralPath $archivePath -Force }
     if ($stage -and (Test-Path -LiteralPath $stage)) { Remove-Item -LiteralPath $stage -Recurse -Force }
     if ($lock) { $lock.Dispose(); Remove-Item -LiteralPath $lockPath -Force }
 }
