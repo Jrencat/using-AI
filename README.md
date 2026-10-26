@@ -19,10 +19,17 @@ using-AI 不是 Codex 插件或 Claude 专用 Skill。GPT、Claude、Gemini、Gr
 
 最简单的使用方式：直接打开[通用规则](docs/workflow/develop.md)，复制全文给 AI，并说“按这些规则处理以下需求：……”。这不配置自动加载。
 
-Windows PowerShell 5.1+ 可下载安装脚本，先审阅再执行，不要求安装 Codex、Python 或 Git：
+Windows PowerShell 5.1+ 推荐一键安装（将 `codex` 改为 `claude` 或 `manual` 可选择目标），无需克隆、预先保存脚本或安装 Git、Python、Node.js：
 
 ```powershell
-Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex
+```
+
+这条命令会以当前用户权限执行远程脚本，信任 GitHub 上此地址当时的内容；`main` 可以变化，HTTPS 不等于内容已经审阅。脚本获取失败时不会继续安装。更安全的两步方式是先下载并审阅，再执行：
+
+```powershell
+Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1 -TimeoutSec 30 -ErrorAction Stop
+# 下载成功后，打开 install-develop.ps1 审阅，再执行下一条命令
 # 选择一个目标：manual（默认）、codex、claude
 .\install-develop.ps1 -Target manual
 ```
@@ -33,7 +40,7 @@ Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/us
 | `codex` | `~/.agents/skills/develop/` | Codex Skill |
 | `claude` | `~/.claude/skills/develop/` | Claude Code Skill；遵循 `CLAUDE_CONFIG_DIR` |
 
-团队分发应把下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核提交。安装器从该提交下载三个文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target <目标>`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
+团队分发应把脚本下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核的完整 40 位提交 SHA；仅指定 `-Ref` 不会固定引导脚本。安装器从单份源码归档提取三个必需文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target <目标>`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
 
 ### 更新、卸载与冲突
 
@@ -44,7 +51,9 @@ Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/us
 
 始终选择原目标及相同用户目录 / 环境。更新、卸载只接受安装器记录且哈希未变的文件；旧目录移到该目标根目录的 `using-ai-backups/`，不删除备份。未知来源、个人修改、新增文件或链接会阻止操作；先将旧目录整体移出发现范围备份，审阅后再安装。同名 Claude command 会阻止安装和更新，但不阻止卸载受管理 Skill，command 始终保留。不会修改项目指引或无关配置。未知目标直接拒绝，可选择 `manual`，不冒充原生支持。
 
-完整 40 位提交 SHA 的 `-Ref` 直接下载 Raw 文件，不请求 GitHub API；分支、标签和短 SHA 仍通过 API 解析为固定提交，不回退到 `main`。下载失败会报告 API 解析或 Raw 下载阶段、HTTP 状态码、具体 URL 及可用的限流信息；没有 HTTP 响应时提示网络 / 代理 / TLS / 超时。按失败 URL 检查对应域名的网络、代理、限流与 ref。文件先下载到临时目录，通过必需文件和内容校验后才安装；失败时已安装内容保持不变。权限或锁问题按报错路径处理，不用管理员权限强制覆盖。安装后需重载宿主；未发现技能时检查同名项目入口或旧目录的遮蔽。
+默认 `main`、分支、标签和完整 40 位 SHA 的 `-Ref` 直接从 `codeload.github.com` 下载单份 ZIP，不请求 GitHub API。短 SHA（4–39 位十六进制）保留 API 解析，再下载该固定提交归档；纯十六进制的分支或标签会按此规则解析。任一阶段失败都不回退到其他版本。完整 SHA 保持不可变；普通 Ref 的归档无法证明真实 SHA，安装记录明确保留 Ref、来源 URL、归档 SHA256 和文件哈希，commit 留空。新记录兼容旧 schema 1 记录的更新和卸载；内容与来源相同的重复更新不替换文件。哈希用于记录下载内容及检测后续本地修改，不是独立的来源真实性认证。
+
+首次安装有两个网络阶段：从 `raw.githubusercontent.com` 获取脚本，再由脚本下载 codeload 归档；短 SHA 另需 API。下载失败会报告阶段、HTTP 状态码、具体 URL 及可用的限流信息；403 本身不能证明 API 限流，Raw、API 和归档端点需分别排查。没有 HTTP 响应时提示网络 / 代理 / TLS / 超时。文件先下载到临时目录，仅提取必需文件；拒绝路径穿越、链接、异常结构及无效内容，全部校验通过后才安装。失败时已安装内容保持不变。权限或锁问题按报错路径处理，不用管理员权限强制覆盖。安装后需重载宿主；未发现技能时检查同名项目入口或旧目录的遮蔽。
 
 旧版没有 `.using-ai-install.json` 时，安装和更新仍拒绝覆盖。明确执行 `-Uninstall` 后，若入口声明 `develop` 并引用本工作流的规则文件、且目录及内容没有链接，安装器可识别旧版并将整个目录（含个人文件）移到上述备份位置，输出实际路径。此识别用于保留内容的卸载，不是来源认证；未知目录、损坏的安装记录或链接仍拒绝处理，请人工检查后将整个目录移出技能发现范围备份。
 
