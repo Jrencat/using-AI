@@ -19,20 +19,33 @@ using-AI 不是 Codex 插件或 Claude 专用 Skill。GPT、Claude、Gemini、Gr
 
 最简单的使用方式：直接打开[通用规则](docs/workflow/develop.md)，复制全文给 AI，并说“按这些规则处理以下需求：……”。这不配置自动加载。
 
-Windows PowerShell 5.1+ 推荐一键安装（将 `codex` 改为 `claude` 或 `manual` 可选择目标），无需克隆、预先保存脚本或安装 Git、Python、Node.js：
+### 快速安装、更新与卸载
+
+在 Windows PowerShell 5.1+ 中执行以下命令，无需克隆、预先保存脚本或安装 Git、Python、Node.js。以下均以当前用户的 Codex Skill 为目标；使用 Claude Code 或手动模式时，将 `codex` 改为 `claude` 或 `manual`，更新、卸载也保持相同目标。
+
+**首次安装**：下载并执行安装器，默认安装 `main` 版本。
 
 ```powershell
 & ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex
 ```
 
-这条命令会以当前用户权限执行远程脚本，信任 GitHub 上此地址当时的内容；`main` 可以变化，HTTPS 不等于内容已经审阅。脚本获取失败时不会继续安装。更安全的两步方式是先下载并审阅，再执行：
+**更新安装**：检查并更新已安装的 develop Skill，无需本地保留安装脚本。
 
 ```powershell
-Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1 -TimeoutSec 30 -ErrorAction Stop
-# 下载成功后，打开 install-develop.ps1 审阅，再执行下一条命令
-# 选择一个目标：manual（默认）、codex、claude
-.\install-develop.ps1 -Target manual
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex -Update
 ```
+
+安装或更新成功后，重新开启 Codex 会话，再输入 `$develop <需求>`（将 `<需求>` 替换为实际需求）。Claude Code 在新会话中使用 `/develop <需求>`；手动模式需自行向 AI 提供规则全文。
+
+**卸载**：将当前用户 `~/.agents/skills/develop/` 中的 develop Skill 移到备份目录，使其退出 Codex 技能发现范围；不会卸载 Codex，也不会删除其他 Skill 或已有备份。卸载后重新开启 Codex 会话。
+
+```powershell
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex -Uninstall
+```
+
+更新和卸载必须使用安装时相同的用户目录与环境。若安装时指定了 `-UserDirectory`，后续命令也需指定相同值；Claude Code 还需保持相同的 `CLAUDE_CONFIG_DIR`。尚未安装时，更新和卸载会报错，应先执行首次安装。
+
+以上命令会以当前用户权限执行远程脚本，信任 GitHub 上此地址当时的内容；`main` 可以变化，HTTPS 不等于内容已经审阅。脚本获取失败时不会继续执行安装器。希望先检查脚本的用户可使用下方的安全审阅方式。
 
 | 目标 | 默认用户目录 | 用途 |
 | --- | --- | --- |
@@ -40,14 +53,25 @@ Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/us
 | `codex` | `~/.agents/skills/develop/` | Codex Skill |
 | `claude` | `~/.claude/skills/develop/` | Claude Code Skill；遵循 `CLAUDE_CONFIG_DIR` |
 
-团队分发应把脚本下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核的完整 40 位提交 SHA；仅指定 `-Ref` 不会固定引导脚本。安装器从单份源码归档提取三个必需文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target <目标>`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
+### 安全审阅方式
 
-### 更新、卸载与冲突
+适合希望执行前检查远程脚本内容的用户；普通安装可直接使用上方的一键命令。先下载脚本，打开并审阅，确认后再单独执行安装命令：
 
 ```powershell
-.\install-develop.ps1 -Target manual -Update
-.\install-develop.ps1 -Target manual -Uninstall
+Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1 -TimeoutSec 30 -ErrorAction Stop
 ```
+
+审阅下载成功的 `install-develop.ps1` 后，选择所需操作执行（以下以 Codex 为例）：
+
+```powershell
+.\install-develop.ps1 -Target codex
+# 已安装时更新：.\install-develop.ps1 -Target codex -Update
+# 卸载该 Skill：.\install-develop.ps1 -Target codex -Uninstall
+```
+
+团队分发应把脚本下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核的完整 40 位提交 SHA；仅指定 `-Ref` 不会固定引导脚本。安装器从单份源码归档提取三个必需文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target codex`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
+
+### 安装保护与故障处理
 
 始终选择原目标及相同用户目录 / 环境。更新、卸载只接受安装器记录且哈希未变的文件；旧目录移到该目标根目录的 `using-ai-backups/`，不删除备份。未知来源、个人修改、新增文件或链接会阻止操作；先将旧目录整体移出发现范围备份，审阅后再安装。同名 Claude command 会阻止安装和更新，但不阻止卸载受管理 Skill，command 始终保留。不会修改项目指引或无关配置。未知目标直接拒绝，可选择 `manual`，不冒充原生支持。
 
