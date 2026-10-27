@@ -12,11 +12,11 @@
 | 已验证接入 | 必须有真实会话加载和关键工作流执行证据；安装模拟不属于此级别 |
 | 不支持或受限 | 缺少项目文件、命令、权限等能力时，只能完成相应部分，需用户补充真实结果 |
 
-当前 Codex 会话通过项目指引读取规则并用于维护，不代表新会话 Skill 自动发现。2026-10-23 尝试以临时工作目录、隔离 `CLAUDE_CONFIG_DIR`、禁用会话持久化，向 Claude Code 非交互会话提供规则全文；CLI 返回退出码 1，提示 `Not logged in /login`。为避免修改真实用户全局配置，未登录或复制凭证，因此未取得真实加载和执行证据。其他具体产品未验证；不能把模型 API 可用或能读 SKILL.md 当作开发执行能力。
+2026-10-27 已用 Codex 0.164.0 原生 `skills/list` 验证标准 CLI 安装的项目 Skill 被发现且启用、无解析错误；这不等于新会话 `$develop` 已执行工作流。隔离个人目录的原生发现仍为 UNVERIFIED。固定 CLI、网络安装、更新及卸载证据见 [Skills CLI 验证记录](skills-cli-validation.md)。2026-10-23 尝试以临时工作目录、隔离 `CLAUDE_CONFIG_DIR`、禁用会话持久化，向 Claude Code 非交互会话提供规则全文；CLI 返回退出码 1，提示 `Not logged in /login`。为避免修改真实用户全局配置，未登录或复制凭证，因此未取得真实加载和执行证据。其他具体产品未验证；不能把模型 API 可用或能读 SKILL.md 当作开发执行能力。
 
 ## 安装、更新和卸载
 
-无需克隆的 Windows 安装、目标目录和操作命令见[首页](../../README.md)。PowerShell 默认 `-Target manual`，可选 `codex` 或 `claude`，不检测或要求任一 CLI。未知目标在写文件前被拒绝。只为所选目标安装，不自动安装所有工具。Claude 用户目录遵循 `CLAUDE_CONFIG_DIR`，Codex 兼容目录冲突检查仅用于 Codex 目标。
+标准 `skills@1.7.4` 快速安装与自维护保护式安装是两种独立管理方式；项目 / 个人范围命令、共享目录影响和迁移步骤见[首页](../../README.md)。标准 CLI 更新可覆盖本地修改，卸载不备份；`check` 是更新别名，不能用于只读预览。不要交叉管理同一目录。以下 PowerShell 说明专指保护式安装器。PowerShell 默认 `-Target manual`，可选 `codex` 或 `claude`，不检测或要求任一 CLI。未知目标在写文件前被拒绝。只为所选目标安装，不自动安装所有工具。Claude 用户目录遵循 `CLAUDE_CONFIG_DIR`，Codex 兼容目录冲突检查仅用于 Codex 目标。
 
 更新和卸载使用相同 `-Target`、`-UserDirectory` 和环境变量。安装器保存提交与逐文件哈希；未知内容、修改、新增文件或链接拒绝替换。旧内容保留在所选根下 `using-ai-backups/`。不自动接管 Python 安装器或其他工具的副本。迁移时先把整个旧目录移出发现范围备份，再安装；手动合并个人定制。下载失败不替换现有包。卸载不删除备份，不改 AGENTS.md、CLAUDE.md 或其他配置。
 
