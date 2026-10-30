@@ -16,17 +16,31 @@
 
 ## 安装、更新和卸载
 
-标准 `skills@1.7.4` 快速安装与自维护保护式安装是两种独立管理方式；项目 / 个人范围命令、共享目录影响和迁移步骤见[首页](../../README.md)。标准 CLI 更新可覆盖本地修改，卸载不备份；`check` 是更新别名，不能用于只读预览。不要交叉管理同一目录。以下 PowerShell 说明专指保护式安装器。PowerShell 默认 `-Target manual`，可选 `codex` 或 `claude`，不检测或要求任一 CLI。未知目标在写文件前被拒绝。只为所选目标安装，不自动安装所有工具。Claude 用户目录遵循 `CLAUDE_CONFIG_DIR`，Codex 兼容目录冲突检查仅用于 Codex 目标。
+新安装统一使用首页的 [npx 安装命令](../../README.md#通过-npx-安装)，由用户在交互中选择 Project 或 Global。查看、更新和卸载按原安装范围执行，命令与共享目录限制见[首页](../../README.md#查看与更新)。标准 CLI 更新可覆盖本地修改，卸载不备份；`check` 是更新别名，不能用于只读预览。`remove --agent codex` 可能保留共享目录却报告成功；要彻底移除所选范围内各宿主的同名 Skill，使用首页不带 `--agent` 的卸载命令，并核对实际目录。
+
+### 旧版安装的维护与迁移
+
+以下保留旧安装器的兼容维护说明，不是另一条新用户安装入口。不要用 npx 直接覆盖旧安装器管理的目录。迁移到 npx 前，先确认项目 / 全局同名入口及本地定制；用原安装器卸载，或将完整旧目录移到技能发现范围之外备份，再按首页安装。仅在 `skills/` 内改名仍可能被发现。不要让两个安装器轮流管理同一目录。
+
+旧 PowerShell 安装器的引导命令保留在此供维护验证使用；下面以 Codex 为目标，维护旧副本时追加 `-Update` 或 `-Uninstall`。命令会以当前用户权限执行 GitHub `main` 上的远程脚本，可先下载审阅；固定版本时须同时固定脚本 URL 和 `-Ref`，仅指定 `-Ref` 不会固定引导脚本。
+
+```powershell
+& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex
+```
+
+PowerShell 默认 `-Target manual`，可选 `codex` 或 `claude`，不检测或要求任一 CLI。未知目标在写文件前被拒绝。只为所选目标安装，不自动安装所有工具。Claude 用户目录遵循 `CLAUDE_CONFIG_DIR`，Codex 兼容目录冲突检查仅用于 Codex 目标。
 
 更新和卸载使用相同 `-Target`、`-UserDirectory` 和环境变量。安装器保存提交与逐文件哈希；未知内容、修改、新增文件或链接拒绝替换。旧内容保留在所选根下 `using-ai-backups/`。不自动接管 Python 安装器或其他工具的副本。迁移时先把整个旧目录移出发现范围备份，再安装；手动合并个人定制。下载失败不替换现有包。卸载不删除备份，不改 AGENTS.md、CLAUDE.md 或其他配置。
 
-### 跨平台与源码安装
+#### 旧版跨平台与源码副本维护
+
+本小节仅供已有手工或源码安装副本的兼容维护、重建及迁移使用。新用户统一使用首页的 [npx / Skills CLI 安装方式](../../README.md#通过-npx-安装)，不将下述方式作为并列的新安装入口。
 
 PowerShell 卸载也支持无 manifest 的可识别旧版：检查 `SKILL.md` 的 `develop` 名称、规则引用及规则的特征段落后，将整个目录原样移到 `using-ai-backups/` 并报告路径，保留个人文件。安装、更新不接受该识别结果；存在但无效的 manifest 不按旧版处理，链接、异常路径或未知内容拒绝移动。无法识别时请人工审阅并整体移到技能发现目录之外备份。Python 安装器没有自动卸载功能，继续采用本节的人工备份方式，不会因本次修复放宽覆盖限制。
 
-无需 PowerShell 时，可从 GitHub 逐一下载 `skills/develop/SKILL.md`、`references/develop.md`、`LICENSE`，保持相对路径，放入宿主已确认的 skills 目录；通用手动使用只需规则全文。不确定宿主机制时，提供上下文即可，不猜测其专有路径。
+维护既有手工副本时，可从 GitHub 获取 `skills/develop/SKILL.md`、`references/develop.md`、`LICENSE`，保持相对路径，在完整旧目录备份并移出发现范围后重建到原宿主已确认的 skills 目录；通用手动使用只需规则全文。不确定宿主机制时，提供上下文即可，不猜测其专有路径。
 
-已有源码用户可用 Python 3.9+ 标准库安装，均不要求宿主 CLI：
+已有源码用户维护旧版副本时，可用 Python 3.9+ 标准库核对分发包，并在完整旧目录备份并移出发现范围后按原宿主和范围重建副本，不要求宿主 CLI：
 
 ```powershell
 python scripts/package_develop.py --check
@@ -35,7 +49,7 @@ python scripts/install_develop.py --agent codex --user
 python scripts/install_develop.py --agent claude --project 'D:\work\my-app'
 ```
 
-以上是可选方式，按环境选择一个。`--user` 使用当前用户主目录，`--project` 要求现有项目。manual 对应 `.using-ai/workflows/develop`，codex 对应 `.agents/skills/develop`，claude 对应 `.claude/skills/develop`；Claude 用户级支持 `CLAUDE_CONFIG_DIR`。未知宿主拒绝，不退回 Codex。Python 安装拒绝已有同名目录；更新、卸载需先将旧目录整体移出发现范围备份，再安装或保留移出状态，不提供受管理的自动更新。
+上述命令应保持旧副本原有的宿主与范围。`--user` 使用当前用户主目录，`--project` 要求现有项目。manual 对应 `.using-ai/workflows/develop`，codex 对应 `.agents/skills/develop`，claude 对应 `.claude/skills/develop`；Claude 用户级支持 `CLAUDE_CONFIG_DIR`。未知宿主拒绝，不退回 Codex。Python 安装拒绝已有同名目录；更新、卸载需先将旧目录整体移出发现范围备份，再安装或保留移出状态，不提供受管理的自动更新。
 
 Skill 格式和目录依据：[Claude Code Skills](https://code.claude.com/docs/en/skills)、[Codex Skills](https://developers.openai.com/codex/skills/)。这些链接是机制参考，不是本次真实会话验证证据。其他宿主只承诺手动提供规则，不宣称其支持相同格式、目录或语法。
 

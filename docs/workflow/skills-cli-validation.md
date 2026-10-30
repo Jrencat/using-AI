@@ -39,6 +39,19 @@
 
 项目 `skills-lock.json` 记录 `source`、`sourceType`、`skillPath`、`computedHash`；本次来源为 `Jrencat/using-AI`、`skills/develop/SKILL.md`。项目更新读取此记录，卸载同步移除对应条目。记录远端内容哈希不等于检查已安装文件是否有个人修改；默认分支记录也不等于不可变提交。个人管理记录位于隔离用户的 `.agents/.skill-lock.json`。团队有意共享项目 Skill 时可审阅提交锁文件及相关 Skill 文件，本任务的测试产物不提交。实验性锁文件恢复未验证。
 
+## 2026-10-30 补充：范围选择与共享目录卸载
+
+此前表格中的卸载结果仅代表当时的隔离环境，不保证检测到其他宿主时仍会删除共享目录。Windows、Node.js 24.14.1 下，使用 npm 缓存中已核对版本为 1.7.4 的 CLI，在临时项目创建最小 `develop` Skill 和项目锁记录，直接执行该包的 `bin/cli.mjs`，得到以下结果。禁用遥测，未操作真实项目或全局安装；临时目录随测试清理。
+
+| 参数 | 退出码 | 成功提示 | Skill 目录 / 锁条目 |
+| --- | --- | --- | --- |
+| `remove develop --agent codex --yes` | 0 | `Successfully removed 1 skill(s)` | 两者仍存在 |
+| `remove develop --yes` | 0 | `Successfully removed 1 skill(s)` | 两者均移除 |
+
+固定版源码在删除前检测未被选中的已安装宿主；只要其中一个宿主的 Skill 路径仍存在，就保留共享目录和锁条目，但仍将本次移除记为成功。因此，首页的彻底卸载命令省略 `--agent`，并说明会移除所选范围内各宿主的同名 `develop`，要求检查实际路径。以上两次退出均无 stderr 诊断；用户终端中的 `UV_HANDLE_CLOSING` 断言未在该复现中出现，不能把它认定为目录保留的原因，也未确认其根因。
+
+安装范围交互已静态核对 1.7.4 源码：普通终端下，未指定 `--global` 且未给 Skills CLI 传 `--yes` 时，会显示 `Installation scope`，提供 `Project` / `Global`。首页保留 `npx.cmd --yes`，移除传给 Skills CLI 的末尾 `--yes` 和预设范围。此项是源码检查，不是本次新的远端安装或交互终端实测；AI Agent 自动检测可能强制非交互，不作为普通用户终端的验证环境。
+
 ## 原生宿主证据与 UNVERIFIED
 
 - Codex 0.164.0：以隔离 `CODEX_HOME` 启动真实 `app-server --stdio`，完成 `initialize` 后调用 `skills/list`，指定临时 `host-project` 并 `forceReload: true`。返回临时项目的 `develop`，`scope: repo`、`enabled: true`、无 Skill 解析错误。未调用模型、未复制凭证。
