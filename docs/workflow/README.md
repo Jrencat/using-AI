@@ -56,6 +56,8 @@ AGENTS.md 与 CLAUDE.md 都指向权威规则，直接描述需求即可；Claud
 
 规则只编辑 `docs/workflow/develop.md`，运行 `python scripts/package_develop.py` 生成分发副本和许可证；`--check` 检查逐字节一致性。入口不复制流程。不增加 Runtime、依赖或后台服务。
 
+以下是本工作流与安装分发工具的维护检查，不是普通业务任务的必跑清单。仅修改规则正文时执行打包、同步检查和 `git diff --check`；修改安装器或相关分发逻辑时执行对应安装测试。业务任务的检查范围按[权威规则](develop.md#实现与必要检查)及目标项目明确适用的强制要求选择。
+
 ```powershell
 python scripts/package_develop.py --check
 python scripts/test_install_develop.py -v
@@ -71,7 +73,7 @@ git diff --check
 
 SIMPLE 用对话中的目标和验收替代额外文档；MODERATE 增加简短方案和相关测试；COMPLEX 明确规格、边界及依赖，按项目约定分批交付；HIGH-RISK 在受影响工作前确认。发现风险可升级，资金、数据安全、权限和不可逆操作不因改动小而降级。已有业务答案不重复询问，已授权工作不反复请求开始。
 
-只读取当前任务相关规范，复用已读上下文；只有新修改、失败或新风险才重复验证。无需默认读取第二阶段 Protocol 或运行旧验证链。完整行为规则见 [develop.md](develop.md)，不在各入口复制。
+只读取当前任务相关规范，复用已读上下文及验证证据；失败本身不是重跑理由，重试须满足[权威规则](develop.md#实现与必要检查)的条件，已成功的检查仅因新的相关变化或证据才补充。验证范围、日志成本及临时产物收尾均遵循该规则，不在各入口复制。无需默认读取第二阶段 Protocol 或运行旧验证链。
 
 ## 与既有资产的边界
 
