@@ -116,7 +116,7 @@ Claude Code 对应检查项目的 `.claude/skills/develop/` 或原全局配置�
 
 在本仓库中可通过宿主项目指引或手动加载规则，直接自然语言描述开发需求；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
 
-在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。安装时自行选择项目或全局范围，步骤与更新、卸载命令见[安装与使用](#安装与使用)。Codex 项目 Skill 原生发现已验证；实际会话调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)保留原有试点记录。以下七阶段模板保持原样，继续作为独立方案与对照基线。
+在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。安装时自行选择项目或全局范围，步骤与更新、卸载命令见[安装与使用](#安装与使用)。Codex 项目 Skill 原生发现已验证；用户提供的背景表明已有真实业务使用，但逐案例调用证据不足，成本收益尚不可比较；详见[使用记录](./docs/workflow/usage-log.md)和[首次试点记录](./docs/workflow/pilot-001.md)。以下七阶段模板保持原样，继续作为独立方案与对照基线。
 
 ## 解决什么问题
 
