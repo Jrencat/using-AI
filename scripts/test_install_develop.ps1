@@ -85,10 +85,10 @@ try {
     $testUser = Join-Path $sandbox 'user'
     New-Item -ItemType Directory -Path $testUser | Out-Null
     $target = Join-Path $testUser '.agents/skills/develop'
-    # Execute the README command text with mocked script acquisition and isolated user path.
-    $readme = [IO.File]::ReadAllText((Join-Path (Split-Path $PSScriptRoot -Parent) 'README.md'))
+    # The legacy bootstrap example lives in the compatibility guide, not the npx quick start.
+    $readme = [IO.File]::ReadAllText((Join-Path (Split-Path $PSScriptRoot -Parent) 'docs/workflow/README.md'))
     $command = [regex]::Match($readme, '(?m)^& \(\[scriptblock\]::Create\(.*$').Value.Trim()
-    Assert (![string]::IsNullOrWhiteSpace($command)) 'README bootstrap command exists'
+    Assert (![string]::IsNullOrWhiteSpace($command)) 'Compatibility guide bootstrap command exists'
     & ([scriptblock]::Create($command + ' -UserDirectory $testUser')) | Out-Null
     Assert ($fixtureState.requests -eq 0) 'Default installation does not request API'
     foreach ($file in @('SKILL.md', 'references/develop.md', 'LICENSE')) {

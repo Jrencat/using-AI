@@ -15,158 +15,83 @@ using-AI 不是 Codex 插件或 Claude 专用 Skill。GPT、Claude、Gemini、Gr
 
 协议兼容表示规则不依赖模型；手动可用表示可以提供上下文；已实现适配表示入口存在；已验证接入需要真实加载和执行证据。宿主缺少文件或命令能力时受限，可由用户提供文件和执行结果，但 AI 必须区分建议与实际执行。
 
-## 无需克隆的安装与使用
+## 安装与使用
 
-最简单的使用方式：直接打开[通用规则](docs/workflow/develop.md)，复制全文给 AI，并说“按这些规则处理以下需求：……”。这不配置自动加载。
+### 通过 npx 安装
 
-### 快速安装：标准 Skills CLI
-
-需要 Node.js / npm 和 Git，并能访问 npm 与 GitHub。在**要使用 Skill 的业务项目根目录**打开 PowerShell，选择下面一种安装方式；不要在 using-AI 源码仓库运行安装测试。固定 `skills@1.7.4` 是固定安装工具版本，默认下载的 using-AI 内容仍来自可变化的默认分支。
-
-**先选择管理方式**：同一范围的 `develop` 只能由一种安装器管理。已有同名目录（包括保护式安装）、旧 Codex 入口或 Claude 同名 command 时，先按下方迁移说明处理，不要直接执行 `add`。标准 CLI 的 `--copy` 不提供冲突或本地修改保护。
-
-**Codex 项目范围快速安装**：安装到当前目录的 `.agents/skills/develop/`。
+需要 Node.js / npm 和 Git，并能访问 npm 与 GitHub。在**要使用 Skill 的业务项目根目录**打开 PowerShell，按所用宿主选择一条命令：
 
 ```powershell
-if ((Test-Path '.agents/skills/develop') -or (Test-Path '.codex/skills/develop')) { throw '已有 develop，请先核对管理方式并备份迁移。' }
-npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent codex --copy --yes
-```
-
-**Claude Code 项目范围快速安装**：参数是 `claude-code`，安装到当前目录的 `.claude/skills/develop/`。安装布局已验证，真实 Claude 会话加载和 `/develop` 调用仍为 **UNVERIFIED**。
-
-```powershell
-if ((Test-Path '.claude/skills/develop') -or (Test-Path '.claude/commands/develop.md')) { throw '已有 develop，请先核对管理方式并备份迁移。' }
-npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent claude-code --copy --yes
-```
-
-**个人范围安装**：添加 `--global`。Codex 使用 `~/.agents/skills/develop/`，不是 `~/.codex/skills/develop/`；该目录也可能被其他支持通用目录的宿主发现。Claude Code 默认使用 `~/.claude/skills/develop/`，设置了 `CLAUDE_CONFIG_DIR` 时使用其下的 `skills/develop/`。两种个人范围参数与文件布局均已在隔离目录实测。
-
-```powershell
-# Codex：已有任何来源的同名安装时，先处理迁移。
-$codexLegacyRoot = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
-if ((Test-Path (Join-Path $HOME '.agents/skills/develop')) -or (Test-Path (Join-Path $codexLegacyRoot 'skills/develop'))) { throw '已有 develop，请先备份迁移。' }
-npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent codex --copy --global --yes
+# Codex
+npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent codex --copy
 ```
 
 ```powershell
-# Claude Code：个人范围；只需选择所用宿主，无需两种都安装。
-$claudeSkillRoot = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { Join-Path $HOME '.claude' }
-if ((Test-Path (Join-Path $claudeSkillRoot 'skills/develop')) -or (Test-Path (Join-Path $claudeSkillRoot 'commands/develop.md'))) { throw '已有 develop，请先备份迁移。' }
-npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent claude-code --copy --global --yes
+# Claude Code
+npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent claude-code --copy
 ```
 
-通常选择项目或个人其中一个范围，避免同名入口重复出现。安装后在目标项目开启新会话：Codex 输入 `$develop 你的需求`，Claude Code 输入 `/develop 你的需求`。Codex 项目 Skill 已由原生发现接口验证；隔离个人目录的原生发现及新会话实际调用仍为 **UNVERIFIED**，详见[验证记录](docs/workflow/skills-cli-validation.md)。
+在自己的交互式 PowerShell 终端执行时，安装会显示 **Installation scope**，用方向键选择范围并回车确认，再核对安装摘要：
 
-### 标准 CLI：检查、更新与卸载
+| 选项 | 生效范围 | Codex 默认目录 | Claude Code 默认目录 |
+| --- | --- | --- | --- |
+| **Project** | 当前项目 | `<项目>/.agents/skills/develop/` | `<项目>/.claude/skills/develop/` |
+| **Global** | 当前用户的所有项目 | `~/.agents/skills/develop/` | `~/.claude/skills/develop/` |
 
-以下仅用于**标准 CLI 管理**的安装。项目命令必须在原安装项目根目录执行；个人命令使用相同系统用户与 `CLAUDE_CONFIG_DIR`。不要在其他目录用项目命令管理原安装。
+Claude Code 设置了 `CLAUDE_CONFIG_DIR` 时，全局目录为该配置目录下的 `skills/develop/`。通常只选一个范围，避免同名入口重复出现。Codex 的 `.agents/skills/` 是共享目录，也可能被其他宿主发现。
+
+**请保留交互选择**：开头的 `npx.cmd --yes` 只跳过 npx 下载工具的确认；不要在安装命令末尾追加 `--yes`，否则 Skills CLI 会跳过范围选择并默认安装到项目。也不要预先添加 `--global`，这样用户可以在安装时自行选择。CLI 检测到 AI Agent 时可能自动采用非交互模式，需要手动选择范围时请在自己的终端运行。
+
+保留 `--copy` 是为了明确使用文件复制方式，避免安装依赖符号链接或 Windows junction。它只控制安装方式，不会跳过 Project / Global 选择，也不提供本地修改保护。
+
+固定 `skills@1.7.4` 只固定安装工具版本，默认下载的 Skill 内容仍来自可变化的默认分支。已有同名 Skill、旧 Codex 入口或 Claude 同名 command 时，先检查来源并将定制内容备份到技能发现目录之外，再处理冲突；`--copy` 不提供本地修改保护。旧安装器管理的副本须先按[兼容维护说明](docs/workflow/README.md#旧版安装的维护与迁移)处理，不要交叉管理同一目录。
+
+安装后在目标项目开启新会话：Codex 输入 `$develop 你的需求`，Claude Code 输入 `/develop 你的需求`。Codex 项目 Skill 原生发现已验证；新会话实际调用、隔离全局目录的原生发现及真实 Claude 会话仍有未验证项，详见[验证记录](docs/workflow/skills-cli-validation.md)。
+
+### 查看与更新
+
+项目命令须在原安装项目根目录执行；全局命令须使用安装时的系统用户与环境。**项目级和全局安装分别管理**，查看项目清单时不加 `--global`，查看全局清单时加上它。
 
 ```powershell
-# 查看本地安装清单；不会检查远端是否更新。
+# 查看项目级 / 全局安装；只列举本地内容，不检查远端更新。
 npx.cmd --yes skills@1.7.4 list --agent codex
 npx.cmd --yes skills@1.7.4 list --agent codex --global
 
-# 检查远端并在需要时立即更新 develop；执行前先整体备份本地定制。
+# 更新项目级 / 全局 develop，按原安装范围选择一条。
 npx.cmd --yes skills@1.7.4 update develop --project --yes
 npx.cmd --yes skills@1.7.4 update develop --global --yes
 ```
 
-**1.7.4 没有独立的只读更新预览**：`check` 是 `update` 的别名，也可能写入文件，不能当成只读检查。希望只确认上游变化时，人工查看 [GitHub 提交记录](https://github.com/Jrencat/using-AI/commits/main/) 并与自己留存的来源记录比较；不要用 `check` 代替审阅。更新命令支持 Skill 名称和范围，不提供 `--agent` 过滤，也不保证保持首次安装的 `--copy` 模式；可能为检测到的其他宿主写入同名入口。若这些宿主已有保护式或个人定制副本，不运行该更新命令，应先统一管理方式。
+Claude Code 查看清单时将 `--agent codex` 改为 `--agent claude-code`。清单中的 `Source: local` 表示 CLI 没有可显示的远端来源记录，也可能是本地路径安装；它本身不能证明发生了覆盖。项目来源记录在 `skills-lock.json`，全局记录在 `~/.agents/.skill-lock.json`。
 
-实测：上游内容与锁记录一致时，更新跳过重装，本地修改暂时保留；将隔离锁记录设为陈旧后触发重装，修改过的 `SKILL.md` 和新增个人文件都被清除。**这不是本地修改保护**。再次执行 `add --copy` 同样可能清理整个目标目录；标准方式没有本项目安装器的备份、拒绝修改和回滚保证。
+**更新前先备份本地定制**：更新可能清除修改和新增文件，不提供备份。`check` 是 `update` 的别名，也可能写入文件，不能作为只读更新预览；只想审阅上游变化时请查看 [GitHub 提交记录](https://github.com/Jrencat/using-AI/commits/main/)。更新不提供 `--agent` 过滤，也不保证保持首次的 `--copy` 模式，可能为检测到的其他宿主写入同名入口。
 
-```powershell
-# Codex 项目范围卸载：在原安装项目根目录执行。
-npx.cmd --yes skills@1.7.4 remove develop --agent codex --yes
-# Codex 个人范围卸载：使用原系统用户。
-npx.cmd --yes skills@1.7.4 remove develop --agent codex --global --yes
+项目锁文件记录来源、Skill 路径和内容哈希，不是本地修改保护清单，也不等于固定了不可变提交。团队决定共享项目 Skill 时，可审阅后提交锁文件及计划共享的 Skill 文件；不要把安装测试产物提交到 using-AI。
 
-# Claude Code：项目范围 / 个人范围，按原安装范围选择一条。
-npx.cmd --yes skills@1.7.4 remove develop --agent claude-code --yes
-npx.cmd --yes skills@1.7.4 remove develop --agent claude-code --global --yes
-```
+### 卸载
 
-卸载会直接删除目标 Skill 目录，包括修改和新增文件，**不备份**。`--agent codex` 仍会移除通用 `.agents/skills/develop/`，其他读取该共享目录的宿主也会失去此入口；`--agent` 不是共享目录内的独占权限。Claude `--copy` 安装是独立目录，但不要省略 `--agent` 或使用 `--all` 扩大删除范围。卸载后重载宿主。
-
-项目安装会生成 `skills-lock.json`，记录来源、Skill 路径和内容哈希，供更新和恢复使用；它不是本地修改保护清单，也不等于固定了不可变提交。团队决定共享该项目 Skill 时，可以审阅后把锁文件与计划共享的 Skill 文件一起提交；`experimental_install` 仍是实验性恢复入口，本次未验证。个人安装不需要把用户目录的管理记录加入项目。临时验证产生的锁文件和安装目录不应提交到 using-AI。
-
-### 两种安装方式的差异与迁移
-
-| 行为 | 标准 CLI 快速安装 | 自维护保护式安装器 |
-| --- | --- | --- |
-| 适用场景 | 希望快速使用，接受自行备份与审阅更新 | 需要严格更新控制、本地修改检测和保留旧版本 |
-| 版本 | 本页固定 CLI 1.7.4；默认 Skill 内容跟随上游 | 可用 `-Ref` 固定完整提交；引导脚本 URL 也需固定 |
-| 本地修改 | 重装可覆盖，卸载直接删除 | 哈希变化、未知或新增内容阻止更新；旧版卸载规则见下文 |
-| 旧内容 | 无本项目的备份或回滚保证 | 原目录移到 `using-ai-backups/`，保留备份供人工恢复 |
-| 范围 | 项目或个人 | PowerShell 安装器为个人范围；源码安装另见详细说明 |
-
-**不要交叉管理同一目录**，也不要让标准 CLI 更新影响到另一安装器管理的同名宿主入口。标准 CLI 不识别 `.using-ai-install.json` 的保护约定，可能覆盖受保护安装；保护式更新也不会自动接管标准 CLI 的副本。
-
-迁移步骤：先确认所有项目 / 个人范围的同名 Skill 和 Claude command，记录原安装方式、路径、来源与本地修改；将完整目录备份到技能发现范围之外，避免只在 `skills/` 内改名。保护式安装转标准方式时，先用原安装器、相同目标和环境执行 `-Uninstall`；如因本地修改拒绝卸载，人工整体备份移出后再继续。标准方式转保护式时，先备份，再在原范围执行上述 `remove`，让 CLI 同时更新自己的锁记录；不要只手删目录而遗留记录。确认目标空缺后才安装另一种方式，并手动审阅合并定制。不要用两个安装器轮流执行更新或卸载。
-
-### 保护式安装、更新与卸载
-
-在 Windows PowerShell 5.1+ 中执行以下命令，无需克隆、预先保存脚本或安装 Git、Python、Node.js。以下均以当前用户的 Codex Skill 为目标；使用 Claude Code 或手动模式时，将 `codex` 改为 `claude` 或 `manual`，更新、卸载也保持相同目标。
-
-**首次安装**：下载并执行安装器，默认安装 `main` 版本。
+**彻底移除所选范围内的 develop**：按原安装范围选择一条命令。这里有意省略 `--agent`，会移除该范围内各宿主的同名 `develop` 入口，其他 Skill 不受影响。请先确认没有其他宿主需要保留此 Skill，并备份定制内容；卸载会直接删除目录，**不备份**。
 
 ```powershell
-& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex
+# 项目级：在原安装项目根目录执行。
+npx.cmd --yes skills@1.7.4 remove develop --yes
+
+# 全局：使用安装时的系统用户与环境。
+npx.cmd --yes skills@1.7.4 remove develop --global --yes
 ```
 
-**更新安装**：检查并更新已安装的 develop Skill，无需本地保留安装脚本。
+**1.7.4 的共享目录行为**：仅执行 `remove develop --agent codex --yes` 时，如果 CLI 检测到其他宿主仍使用 `.agents/skills/develop/`，会保留目录和锁记录，却仍报告 `Successfully removed`。因此，不能只根据成功提示判断卸载完成；也不要用 `--all`，它会扩大到其他 Skill。
+
+以 Codex 为例，卸载后按原范围选择一条检查，预期返回 `False`，再重新开启宿主会话：
 
 ```powershell
-& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex -Update
+# 项目级
+Test-Path -LiteralPath '.agents/skills/develop'
+# 全局
+Test-Path -LiteralPath (Join-Path $HOME '.agents/skills/develop')
 ```
 
-安装或更新成功后，重新开启 Codex 会话，再输入 `$develop <需求>`（将 `<需求>` 替换为实际需求）。Claude Code 在新会话中使用 `/develop <需求>`；手动模式需自行向 AI 提供规则全文。
-
-**卸载**：将当前用户 `~/.agents/skills/develop/` 中的 develop Skill 移到备份目录，使其退出 Codex 技能发现范围；不会卸载 Codex，也不会删除其他 Skill 或已有备份。卸载后重新开启 Codex 会话。
-
-```powershell
-& ([scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -TimeoutSec 30 -ErrorAction Stop).Content)) -Target codex -Uninstall
-```
-
-更新和卸载必须使用安装时相同的用户目录与环境。若安装时指定了 `-UserDirectory`，后续命令也需指定相同值；Claude Code 还需保持相同的 `CLAUDE_CONFIG_DIR`。尚未安装时，更新和卸载会报错，应先执行首次安装。
-
-以上命令会以当前用户权限执行远程脚本，信任 GitHub 上此地址当时的内容；`main` 可以变化，HTTPS 不等于内容已经审阅。脚本获取失败时不会继续执行安装器。希望先检查脚本的用户可使用下方的安全审阅方式。
-
-| 目标 | 默认用户目录 | 用途 |
-| --- | --- | --- |
-| `manual` | `~/.using-ai/workflows/develop/` | 将 `references/develop.md` 提供给任意 AI，无自动发现 |
-| `codex` | `~/.agents/skills/develop/` | Codex Skill |
-| `claude` | `~/.claude/skills/develop/` | Claude Code Skill；遵循 `CLAUDE_CONFIG_DIR` |
-
-### 安全审阅方式
-
-适合希望执行前检查远程脚本内容的用户；保护式安装也可使用上方的远程脚本命令。先下载脚本，打开并审阅，确认后再单独执行安装命令：
-
-```powershell
-Invoke-WebRequest -UseBasicParsing 'https://raw.githubusercontent.com/Jrencat/using-AI/main/scripts/install-develop.ps1' -OutFile install-develop.ps1 -TimeoutSec 30 -ErrorAction Stop
-```
-
-审阅下载成功的 `install-develop.ps1` 后，选择所需操作执行（以下以 Codex 为例）：
-
-```powershell
-.\install-develop.ps1 -Target codex
-# 已安装时更新：.\install-develop.ps1 -Target codex -Update
-# 卸载该 Skill：.\install-develop.ps1 -Target codex -Uninstall
-```
-
-团队分发应把脚本下载 URL 的 `main` 和安装参数 `-Ref` 固定到同一已审核的完整 40 位提交 SHA；仅指定 `-Ref` 不会固定引导脚本。安装器从单份源码归档提取三个必需文件，不安装其他 AI 工具。已有源码时也可运行 `powershell -NoProfile -File scripts/install-develop.ps1 -Target codex`；它仍从 GitHub 获取所选版本的包，本地未发布的规则改动请用详细说明中的 Python 源码安装方式。
-
-### 安装保护与故障处理
-
-始终选择原目标及相同用户目录 / 环境。更新、卸载只接受安装器记录且哈希未变的文件；旧目录移到该目标根目录的 `using-ai-backups/`，不删除备份。未知来源、个人修改、新增文件或链接会阻止操作；先将旧目录整体移出发现范围备份，审阅后再安装。同名 Claude command 会阻止安装和更新，但不阻止卸载受管理 Skill，command 始终保留。不会修改项目指引或无关配置。未知目标直接拒绝，可选择 `manual`，不冒充原生支持。
-
-默认 `main`、分支、标签和完整 40 位 SHA 的 `-Ref` 直接从 `codeload.github.com` 下载单份 ZIP，不请求 GitHub API。短 SHA（4–39 位十六进制）保留 API 解析，再下载该固定提交归档；纯十六进制的分支或标签会按此规则解析。任一阶段失败都不回退到其他版本。完整 SHA 保持不可变；普通 Ref 的归档无法证明真实 SHA，安装记录明确保留 Ref、来源 URL、归档 SHA256 和文件哈希，commit 留空。新记录兼容旧 schema 1 记录的更新和卸载；内容与来源相同的重复更新不替换文件。哈希用于记录下载内容及检测后续本地修改，不是独立的来源真实性认证。
-
-首次安装有两个网络阶段：从 `raw.githubusercontent.com` 获取脚本，再由脚本下载 codeload 归档；短 SHA 另需 API。下载失败会报告阶段、HTTP 状态码、具体 URL 及可用的限流信息；403 本身不能证明 API 限流，Raw、API 和归档端点需分别排查。没有 HTTP 响应时提示网络 / 代理 / TLS / 超时。文件先下载到临时目录，仅提取必需文件；拒绝路径穿越、链接、异常结构及无效内容，全部校验通过后才安装。失败时已安装内容保持不变。权限或锁问题按报错路径处理，不用管理员权限强制覆盖。安装后需重载宿主；未发现技能时检查同名项目入口或旧目录的遮蔽。
-
-旧版没有 `.using-ai-install.json` 时，安装和更新仍拒绝覆盖。明确执行 `-Uninstall` 后，若入口声明 `develop` 并引用本工作流的规则文件、且目录及内容没有链接，安装器可识别旧版并将整个目录（含个人文件）移到上述备份位置，输出实际路径。此识别用于保留内容的卸载，不是来源认证；未知目录、损坏的安装记录或链接仍拒绝处理，请人工检查后将整个目录移出技能发现范围备份。
-
-macOS / Linux 可直接提供规则全文，或从 GitHub 下载 `skills/develop/` 的 `SKILL.md`、`references/develop.md`、`LICENSE` 到已确认的宿主技能目录；存在同名目录时先备份，不覆盖。无需克隆整个仓库。跨平台源码安装、项目级安装和验证边界见[详细接入说明](docs/workflow/README.md)。
+Claude Code 对应检查项目的 `.claude/skills/develop/` 或原全局配置目录下的 `skills/develop/`。如果命令末尾出现 `UV_HANDLE_CLOSING` 断言，进程没有正常退出，应核对实际目录和相同范围的 `list`，不要把 `Done!` 当作完成依据；本次已复现的共享目录保留行为在无断言、退出码为 0 时也会出现，二者不能混为同一原因。
 
 ---
 
@@ -191,7 +116,7 @@ macOS / Linux 可直接提供规则全文，或从 GitHub 下载 `skills/develop
 
 在本仓库中可通过宿主项目指引或手动加载规则，直接自然语言描述开发需求；[AGENTS.md](./AGENTS.md) 指引接入[通用工作流](./docs/workflow/develop.md)。Claude Code 保留 `/develop 你的开发需求` 及自然语言入口，引用同一规则源。AI 按复杂度与风险选择必要流程，实施最小修改、执行相关检查并交付；简单任务不要求手选七个阶段。
 
-在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。完整步骤与更新、卸载策略见[启动与安装方法](./docs/workflow/README.md)。保留旧版手工接入方式。Codex 项目 Skill 原生发现已验证；实际会话调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)保留原有试点记录。以下七阶段模板保持原样，继续作为独立方案与对照基线。
+在任意业务仓库中使用时，推荐安装标准 [develop Skill](./skills/develop/SKILL.md)：支持用户级或项目级安装，Codex 用 `$develop 需求`，Claude Code 用 `/develop 需求`。安装时自行选择项目或全局范围，步骤与更新、卸载命令见[安装与使用](#安装与使用)。Codex 项目 Skill 原生发现已验证；实际会话调用和真实业务试点待验证，成本收益尚不可比较；[首次试点记录](./docs/workflow/pilot-001.md)保留原有试点记录。以下七阶段模板保持原样，继续作为独立方案与对照基线。
 
 ## 解决什么问题
 
