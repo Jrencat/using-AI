@@ -4,7 +4,13 @@ using-AI 是一套模型无关的 AI 软件研发工作流。你在自己的项�
 
 ## 快速开始
 
-### 通过 npx 安装
+在目标项目中打开 Codex CLI 或 Claude Code，将这句话发给它：
+
+```text
+请按 https://github.com/Jrencat/using-AI 的 README 快速开始，为当前项目和当前工具安装 develop Skill，并告诉我如何发起第一个需求。
+```
+
+### 手动通过 npx 安装
 
 以下命令已在 Windows PowerShell 验证。准备好 Node.js、npm 和 Git，确认可以访问 npm 和 GitHub。在**你打算试用的代码项目根目录**打开 PowerShell，按所用工具选择一条命令安装 `develop` Skill。
 
@@ -30,6 +36,8 @@ npx.cmd --yes skills@1.7.4 add Jrencat/using-AI --skill develop --agent claude-c
 | --- | --- |
 | Codex CLI | `$develop 给任务列表增加按状态筛选的功能` |
 | Claude Code | `/develop 给任务列表增加按状态筛选的功能` |
+
+例如，要求修复分页时，交付说明应写清实际触发的操作和观察结果。示例：“已在列表中切换到第二页，页码和数据行随之更新。接口使用模拟数据，真实服务返回结果待验。”只有实际执行过这项检查时才这样报告。
 
 ## 其他 AI 工具如何使用
 

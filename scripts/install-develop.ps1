@@ -12,6 +12,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $origin = 'https://github.com/Jrencat/using-AI'
 $files = @('SKILL.md', 'references/develop.md', 'LICENSE')
+$evaluationFile = 'references/evaluation.md'
 $manifestName = '.using-ai-install.json'
 $stage = $null
 $lock = $null
@@ -28,7 +29,7 @@ function Expand-SkillArchive([string]$Archive, [string]$Destination) {
         if ($zip.Entries.Count -gt 20000) { throw 'Archive has too many entries.' }
         foreach ($entry in $zip.Entries) {
             $name = $entry.FullName
-            # Validate every entry, but only write the three required regular files.
+            # Validate every entry, but only write the supported regular files.
             if ($name -match '\\|:|[\x00-\x1f]' -or $name.StartsWith('/') -or
                 @($name.TrimEnd('/').Split('/') | Where-Object { $_ -eq '.' -or $_ -eq '..' -or $_ -eq '' -or $_ -match '[. ]$' }).Count) {
                 throw 'Unsafe archive path.'
@@ -46,7 +47,7 @@ function Expand-SkillArchive([string]$Archive, [string]$Destination) {
             $relative = $name.Substring($root.Length + 1)
             if ($relative -clike 'skills/develop/*') {
                 $file = $relative.Substring('skills/develop/'.Length)
-                if ($files -ccontains $file) {
+                if (($files + $evaluationFile) -ccontains $file) {
                     if ($entry.Length -le 0 -or $entry.Length -gt 2MB -or $name.EndsWith('/') -or $unixType -eq 0x4000) { throw 'Invalid package entry size or type.' }
                     $selected[$file] = $entry
                 }
@@ -54,6 +55,8 @@ function Expand-SkillArchive([string]$Archive, [string]$Destination) {
         }
         foreach ($file in $files) {
             if (!$selected.ContainsKey($file)) { throw "Incomplete package: $file" }
+        }
+        foreach ($file in $selected.Keys) {
             [IO.Compression.ZipFileExtensions]::ExtractToFile($selected[$file], (Join-Path $Destination $file))
         }
     }
@@ -143,6 +146,13 @@ function Assert-Package([string]$Path) {
         $rules -notmatch '(?m)^## \u4ea4\u4ed8\s*$') {
         throw 'Invalid references/develop.md: expected workflow title and delivery section.'
     }
+    if ($rules.Contains('](evaluation.md)')) {
+        $evaluationPath = Join-Path $Path $evaluationFile
+        if (!(Test-Path -LiteralPath $evaluationPath -PathType Leaf) -or
+            (Get-Item -LiteralPath $evaluationPath).Length -eq 0) {
+            throw "Incomplete package: $evaluationFile"
+        }
+    }
     $license = Get-Content -LiteralPath (Join-Path $Path 'LICENSE') -Raw -Encoding UTF8
     if ($license -notmatch '\AMIT License\r?\n' -or $license -notmatch 'THE SOFTWARE IS PROVIDED "AS IS"') {
         throw 'Invalid LICENSE: expected the MIT license.'
@@ -169,13 +179,15 @@ function Assert-Managed([string]$Path) {
     if ($record.origin -ne $origin -or !$validSource) {
         throw "Unrecognized installation record; left untouched: $Path"
     }
-    if (@($items | Where-Object { !$_.PSIsContainer }).Count -ne $files.Count + 1 -or
+    $managedFiles = $files
+    if ($record.hashes.PSObject.Properties[$evaluationFile]) { $managedFiles += $evaluationFile }
+    if (@($items | Where-Object { !$_.PSIsContainer }).Count -ne $managedFiles.Count + 1 -or
         @($items | Where-Object { $_.PSIsContainer -and $_.FullName -ne (Join-Path $Path 'references') }).Count -ne 0 -or
-        @($record.hashes.PSObject.Properties).Count -ne $files.Count) {
+        @($record.hashes.PSObject.Properties).Count -ne $managedFiles.Count) {
         throw "Local additions detected; move the Skill outside skills as a backup before reinstalling: $Path"
     }
     Assert-Package $Path
-    foreach ($file in $files) {
+    foreach ($file in $managedFiles) {
         $expected = $record.hashes.PSObject.Properties[$file]
         if (!$expected -or (Get-FileHash -LiteralPath (Join-Path $Path $file) -Algorithm SHA256).Hash -ne $expected.Value) {
             throw "Local changes detected in $file. Back up the Skill outside skills and reinstall; no files were replaced."
@@ -262,7 +274,9 @@ try {
         try { Assert-Package $stage }
         catch { throw "Package validation failed; URL: $url. $($_.Exception.Message) Existing Skill is unchanged." }
         $hashes = [ordered]@{}
-        foreach ($file in $files) { $hashes[$file] = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash }
+        $packageFiles = $files
+        if (Test-Path -LiteralPath (Join-Path $stage $evaluationFile)) { $packageFiles += $evaluationFile }
+        foreach ($file in $packageFiles) { $hashes[$file] = (Get-FileHash -LiteralPath (Join-Path $stage $file) -Algorithm SHA256).Hash }
         # A mutable ref archive does not prove a commit; never infer SHA from its directory name.
         @{ schema = 2; origin = $origin; commit = $commit; ref = $archiveRef; requestedRef = $Ref; source = $url;
            archiveSha256 = (Get-FileHash -LiteralPath $archivePath -Algorithm SHA256).Hash; hashes = $hashes } |
@@ -271,7 +285,7 @@ try {
         if ($exists) {
             Assert-Managed $destinationPath
             $old = Get-Content -LiteralPath (Join-Path $destinationPath $manifestName) -Raw -Encoding UTF8 | ConvertFrom-Json
-            $sameFiles = @($files | Where-Object { $old.hashes.PSObject.Properties[$_].Value -ne $hashes[$_] }).Count -eq 0
+            $sameFiles = $hashes.Count -eq @($old.hashes.PSObject.Properties).Count -and @($packageFiles | Where-Object { $old.hashes.PSObject.Properties[$_].Value -ne $hashes[$_] }).Count -eq 0
             if ($sameFiles -and $old.ref -ceq $archiveRef -and $old.schema -eq 2 -and $old.commit -eq $commit) {
                 Write-Output "Already up to date: ref $Ref (package hashes unchanged)"; return
             }

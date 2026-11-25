@@ -32,12 +32,16 @@ function Invoke-WebRequest {
     if ($fixtureState.archiveFault -eq 'corrupt') { Set-Content -LiteralPath $OutFile -Value 'not a zip'; return }
     $zip = [IO.Compression.ZipFile]::Open($OutFile, 'Create')
     try {
-        foreach ($file in @('SKILL.md', 'references/develop.md', 'LICENSE')) {
+        foreach ($file in @('SKILL.md', 'references/develop.md', 'references/evaluation.md', 'LICENSE')) {
+            if ($file -eq 'references/evaluation.md' -and ($fixtureState.legacy -or $fixtureState.missingEvaluation)) { continue }
             if ($fixtureState.incomplete -and $file -eq 'LICENSE') { continue }
             $entry = $zip.CreateEntry("using-AI-fixture/skills/develop/$file")
             $stream = $entry.Open()
             try {
                 $bytes = [IO.File]::ReadAllBytes((Join-Path $package $file))
+                if ($fixtureState.legacy -and $file -eq 'references/develop.md') {
+                    $bytes = [Text.Encoding]::UTF8.GetBytes(([Text.Encoding]::UTF8.GetString($bytes) -replace '(?m)^.*\]\(evaluation\.md\).*$',''))
+                }
                 if ($fixtureState.invalid -eq $file) { $bytes = [Text.Encoding]::UTF8.GetBytes('<html>invalid</html>') }
                 elseif ($fixtureState.invalid -eq 'metadata' -and $file -eq 'SKILL.md') {
                     $bytes = [Text.Encoding]::UTF8.GetBytes(([Text.Encoding]::UTF8.GetString($bytes).Replace('name: develop', 'name: wrong')) + "`nname: develop`n")
@@ -91,7 +95,7 @@ try {
     Assert (![string]::IsNullOrWhiteSpace($command)) 'Compatibility guide bootstrap command exists'
     & ([scriptblock]::Create($command + ' -UserDirectory $testUser')) | Out-Null
     Assert ($fixtureState.requests -eq 0) 'Default installation does not request API'
-    foreach ($file in @('SKILL.md', 'references/develop.md', 'LICENSE')) {
+    foreach ($file in @('SKILL.md', 'references/develop.md', 'references/evaluation.md', 'LICENSE')) {
         Assert ((Get-FileHash -LiteralPath (Join-Path $target $file)).Hash -eq (Get-FileHash -LiteralPath (Join-Path $package $file)).Hash) "Installed bytes: $file"
     }
     Assert (!(Test-Path -LiteralPath (Join-Path $testUser 'AGENTS.md'))) 'No project config written'
@@ -119,7 +123,7 @@ try {
     $passed++
 
     $before = @{}
-    foreach ($file in @('SKILL.md', 'references/develop.md', 'LICENSE', '.using-ai-install.json')) {
+    foreach ($file in @('SKILL.md', 'references/develop.md', 'references/evaluation.md', 'LICENSE', '.using-ai-install.json')) {
         $before[$file] = (Get-FileHash -LiteralPath (Join-Path $target $file)).Hash
     }
     foreach ($status in @(403, 404)) {
@@ -144,12 +148,22 @@ try {
     $fixtureState.incomplete = $true
     Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Incomplete package'
     $fixtureState.incomplete = $false
+    $fixtureState.missingEvaluation = $true
+    Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Incomplete package: references/evaluation.md'
+    $fixtureState.missingEvaluation = $false
     foreach ($invalidFile in @('SKILL.md', 'references/develop.md', 'LICENSE', 'metadata')) {
         $fixtureState.invalid = $invalidFile
         Expect-Failure { & $installer -Update -Target codex -UserDirectory $testUser } 'Package validation failed'
     }
     $fixtureState.invalid = $false
     foreach ($file in $before.Keys) { Assert ((Get-FileHash -LiteralPath (Join-Path $target $file)).Hash -eq $before[$file]) 'Failed updates preserve all installed bytes' }
+    $fixtureState.legacy = $true
+    & $installer -Update -Target codex -UserDirectory $testUser | Out-Null
+    Assert (!(Test-Path -LiteralPath (Join-Path $target 'references/evaluation.md'))) 'Older ref installs its original file set'
+    $fixtureState.legacy = $false
+    & $installer -Update -Target codex -UserDirectory $testUser | Out-Null
+    Assert (Test-Path -LiteralPath (Join-Path $target 'references/evaluation.md')) 'Update from three-file installation adds evaluation'
+    $passed++
     # Default, branches, tags and full SHA must work even with API unavailable.
     $fixtureState.failureStage = 'API'
     foreach ($refName in @('main', 'release/test', 'v1.0', ('a' * 40))) {

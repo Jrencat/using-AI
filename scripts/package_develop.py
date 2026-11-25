@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 COPIES = {
     ROOT / "docs/workflow/develop.md": ROOT / "skills/develop/references/develop.md",
+    ROOT / "docs/workflow/evaluation.md": ROOT / "skills/develop/references/evaluation.md",
     ROOT / "LICENSE": ROOT / "skills/develop/LICENSE",
 }
 
